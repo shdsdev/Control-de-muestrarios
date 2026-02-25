@@ -1,62 +1,101 @@
 @import "tailwindcss";
 
 :root {
-  --background: #09090b;
-  --foreground: #fafafa;
-  --card: #121214;
-  --card-foreground: #fafafa;
-  --popover: #09090b;
-  --popover-foreground: #fafafa;
-  --primary: #d4ff70;
-  --primary-foreground: #09090b;
-  --secondary: #18181b;
-  --secondary-foreground: #fafafa;
-  --muted: #1c1c1f;
-  --muted-foreground: #71717a;
-  --accent: #d4ff70;
-  --accent-foreground: #09090b;
-  --destructive: #ef4444;
-  --destructive-foreground: #fafafa;
+  /* Default Theme: Dark Luxury */
+  --bg: #09090b;
+  --surface: #121214;
+  --surface-2: #1c1c1f;
+
+  --text: #fafafa;
+  --text-muted: #71717a;
+  --text-inverse: #09090b;
+
   --border: #27272a;
-  --input: #27272a;
-  --ring: #d4ff70;
+  --border-strong: #3f3f46;
+
+  --primary: #d4ff70;
+  --accent: #d4ff70;
+  --accent-soft: rgba(212, 255, 112, 0.1);
+  --focus-ring: rgba(212, 255, 112, 0.4);
+
+  --danger: #ef4444;
   --radius: 0.75rem;
 
-  /* Status Colors from reference */
-  --status-amber: #f59e0b;
-  --status-yellow: #facc15;
-  --status-teal: #14b8a6;
-  --status-blue: #3b82f6;
-  --status-purple: #a855f7;
-  --status-deep-blue: #1e3a8a;
-  --status-red: #ef4444;
+  /* Global UI Tokens (Glows/Shadows) */
+  --glow: rgba(212, 255, 112, 0.15);
+  --shadow: rgba(0, 0, 0, 0.5);
 
-  /* Neon Aqua -> Luxury Silver/Gray */
-  --neon-aqua: #ffffff;
-  --neon-aqua-glow: rgba(255, 255, 255, 0.1);
+  /* Internal Tokens (legacy support/mapping) */
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card: var(--surface);
+  --card-foreground: var(--text);
+  --secondary: var(--surface-2);
+  --secondary-foreground: var(--text);
+  --muted: var(--surface-2);
+  --muted-foreground: var(--text-muted);
+}
+
+[data-theme="shades-light"] {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-inverse: #0f172a;
+  /* Buttons with accent text usually need dark text in light mode too if green is used */
+
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  --primary: #a3e635;
+  --accent: #a3e635;
+  --accent-soft: rgba(163, 230, 53, 0.15);
+  --focus-ring: rgba(163, 230, 53, 0.5);
+
+  --danger: #ef4444;
+  --glow: rgba(163, 230, 53, 0.2);
+  --shadow: rgba(0, 0, 0, 0.05);
+
+  --text-inverse: #064e3b;
+  /* Dark emerald for readability against lime green */
+}
+
+[data-theme="sage-dashboard"] {
+  --bg: #f1f5f2;
+  --surface: #ffffff;
+  --surface-2: #e2ede5;
+
+  --text: #1a2e1f;
+  --text-muted: #5a7a61;
+  --text-inverse: #ffffff;
+
+  --border: #d1dbd3;
+  --border-strong: #b1bdb4;
+
+  --primary: #86a089;
+  --accent: #a3e635;
+  --accent-soft: rgba(163, 230, 53, 0.1);
+  --focus-ring: rgba(134, 160, 137, 0.5);
+
+  --danger: #ef4444;
+  --glow: rgba(134, 160, 137, 0.1);
+  --shadow: rgba(0, 0, 0, 0.05);
+
+  --text-inverse: #1a2e1f;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
   --color-primary: var(--primary);
-  --color-card: var(--card);
+  --color-card: var(--surface);
   --color-border: var(--border);
   --color-accent: var(--accent);
-  --color-secondary: var(--secondary);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-
-  /* New status color tokens */
-  --color-status-amber: var(--status-amber);
-  --color-status-yellow: var(--status-yellow);
-  --color-status-teal: var(--status-teal);
-  --color-status-blue: var(--status-blue);
-  --color-status-purple: var(--status-purple);
-  --color-status-deep-blue: var(--status-deep-blue);
-  --color-status-red: var(--status-red);
-
-  --color-neon-aqua: var(--neon-aqua);
+  --color-secondary: var(--surface-2);
+  --color-muted: var(--surface-2);
+  --color-muted-foreground: var(--text-muted);
 
   --font-sans: var(--font-inter);
   --font-mono: var(--font-inter);
@@ -68,43 +107,60 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased font-sans;
+    @apply bg-background text-foreground antialiased font-sans transition-colors duration-300;
     background-image:
-      radial-gradient(at 0% 0%, rgba(212, 255, 112, 0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(212, 255, 112, 0.02) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, var(--glow) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, var(--glow) 0px, transparent 50%);
     background-attachment: fixed;
+  }
+
+  /* Browser Autofill Fix */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  textarea:-webkit-autofill:active,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus,
+  select:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--text) !important;
+    -webkit-box-shadow: 0 0 0px 1000px var(--surface-2) inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+    border: 1px solid var(--border) !important;
   }
 }
 
 .glass {
-  background: rgba(24, 24, 27, 0.8);
+  background: var(--surface);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border);
 }
 
 .neon-glow-lime {
-  box-shadow: 0 0 20px rgba(212, 255, 112, 0.15);
+  box-shadow: 0 0 20px var(--glow);
 }
 
 .btn-neon-aqua {
-  background: rgba(255, 255, 255, 0.02);
-  color: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow:
-    0 4px 15px rgba(0, 0, 0, 0.);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 15px var(--shadow);
   backdrop-filter: blur(8px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-neon-aqua:hover {
-  background: rgba(20, 184, 154, 0.13);
-  color: #63f5da;
-  border-color: #14b899;
+  background: var(--accent);
+  color: var(--text-inverse);
+  border-color: var(--accent);
   box-shadow:
-    0 0 20px rgba(20, 184, 153, 0.3),
-    inset 0 0 8px rgba(20, 184, 153, 0.1);
+    0 0 20px var(--glow),
+    inset 0 0 8px var(--glow);
   transform: translateY(-2px);
-  text-shadow: 0 0 10px rgba(20, 184, 153, 0.3);
 }
 
 .btn-neon-aqua:active {
@@ -118,8 +174,8 @@
 }
 
 .modal-lime-stroke {
-  border: 1px solid rgba(212, 255, 112, 0.3);
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 255, 112, 0.05);
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 50px var(--shadow), 0 0 20px var(--glow);
 }
 
 .toast-slide-in {
@@ -142,23 +198,29 @@
 input,
 select,
 textarea {
-  background-color: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  color: white !important;
+  background-color: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
   transition: all 0.2s ease;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: #d4ff70 !important;
-  box-shadow: 0 0 0 1px rgba(212, 255, 112, 0.2) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 1px var(--focus-ring) !important;
   outline: none !important;
 }
 
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 0.6;
+}
+
 select option {
-  background-color: #0c0c0e;
-  color: white;
+  background-color: var(--surface);
+  color: var(--text);
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -170,6 +232,6 @@ select option {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border);
   border-radius: 10px;
 }

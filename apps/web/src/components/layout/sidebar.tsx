@@ -14,7 +14,8 @@ import {
     ChevronLeft,
     ChevronRight,
     LogOut,
-    Users
+    Users,
+    Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
@@ -46,39 +47,40 @@ export default function Sidebar({
     return (
         <aside
             className={cn(
-                "h-screen bg-[#020202] border-r border-border/40 flex flex-col fixed left-0 top-0 transition-all duration-300 z-50",
+                "h-screen bg-surface border-r border-border flex flex-col fixed left-0 top-0 transition-all duration-300 z-50",
                 isCollapsed ? "w-20" : "w-64"
             )}
         >
-            <div className="p-6 flex items-center justify-between">
-                {!isCollapsed && <h1 className="text-xl font-black tracking-tighter text-white italic">SHADES</h1>}
-                <button
-                    onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-primary transition-colors"
-                >
-                    {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-                </button>
+            <div className="p-6 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shrink-0 shadow-[0_0_15px_var(--glow)]">
+                    <Zap className="text-text-inverse fill-text-inverse" size={18} />
+                </div>
+                {!isCollapsed && (
+                    <span className="font-black text-xl text-foreground tracking-tighter uppercase italic">SHADES</span>
+                )}
             </div>
 
-            <nav className="flex-1 px-3 space-y-1 mt-4">
+            <nav className="flex-1 px-3 py-4 space-y-1">
                 {navItems.map((item) => {
-                    const isActive = pathname.startsWith(item.href);
+                    const isActive = pathname === item.href;
                     return (
                         <Link
                             key={item.href}
                             href={item.href}
-                            title={isCollapsed ? item.name : ''}
                             className={cn(
                                 "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group relative",
                                 isActive
-                                    ? "bg-primary/10 text-primary"
-                                    : "text-muted-foreground hover:bg-secondary hover:text-white"
+                                    ? "bg-accent/10 text-accent font-bold"
+                                    : "text-text-muted hover:bg-surface-2 hover:text-foreground"
                             )}
                         >
-                            <item.icon size={20} className={cn(isActive ? "text-primary" : "group-hover:text-white")} />
-                            {!isCollapsed && <span className="font-semibold text-sm">{item.name}</span>}
+                            <item.icon size={20} className={cn(
+                                "transition-transform group-hover:scale-110",
+                                isActive ? "scale-110" : ""
+                            )} />
+                            {!isCollapsed && <span className="text-sm tracking-tight">{item.name}</span>}
                             {isActive && !isCollapsed && (
-                                <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-primary" />
+                                <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-accent" />
                             )}
                         </Link>
                     );
@@ -88,14 +90,14 @@ export default function Sidebar({
             <div className="p-3 border-t border-border space-y-1">
                 <Link
                     href="/settings"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-muted-foreground hover:bg-secondary hover:text-white transition-all"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-text-muted hover:bg-surface-2 hover:text-foreground transition-all"
                 >
                     <Settings size={20} />
                     {!isCollapsed && <span className="font-semibold text-sm">Configuración</span>}
                 </Link>
                 <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-muted-foreground hover:bg-red-500/10 hover:text-red-400 transition-all"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-text-muted hover:bg-danger/10 hover:text-danger transition-all"
                 >
                     <LogOut size={20} />
                     {!isCollapsed && <span className="font-semibold text-sm">Cerrar Sesión</span>}

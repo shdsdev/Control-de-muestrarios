@@ -601,13 +601,13 @@ export default function EmpresasPage() {
 
                                         {/* Sub-brands */}
                                         {subMarcas.length > 0 && (
-                                            <div className="bg-zinc-900/20 rounded-2xl p-4 border border-white/[0.03]">
-                                                <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-3 flex items-center gap-2"><GitBranch size={12} />Sub-marcas ({subMarcas.length})</h4>
+                                            <div className="bg-surface-2/20 rounded-2xl p-4 border border-border">
+                                                <h4 className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-3 flex items-center gap-2"><GitBranch size={12} />Sub-marcas ({subMarcas.length})</h4>
                                                 <div className="grid grid-cols-2 gap-2">
                                                     {subMarcas.map(sub => (
                                                         <div key={sub.id} onClick={() => handleOpenDetail(sub)}
-                                                            className="bg-zinc-900/50 rounded-xl border border-white/[0.04] p-3 flex items-center gap-3 cursor-pointer hover:border-violet-500/30 transition-all group">
-                                                            <div className="w-10 h-10 rounded-lg bg-zinc-950 border border-white/5 flex items-center justify-center overflow-hidden shrink-0">
+                                                            className="bg-surface-2/50 rounded-xl border border-border p-3 flex items-center gap-3 cursor-pointer hover:border-accent/30 transition-all group">
+                                                            <div className="w-10 h-10 rounded-lg bg-surface-2 border border-border flex items-center justify-center overflow-hidden shrink-0">
                                                                 {sub.logo_url && !brokenLogos.has(sub.logo_url) ? (
                                                                     <img
                                                                         src={sub.logo_url}
@@ -616,11 +616,11 @@ export default function EmpresasPage() {
                                                                         onError={() => handleLogoError(sub.logo_url!)}
                                                                     />
                                                                 ) : (
-                                                                    <Building2 size={14} className="text-zinc-700" />
+                                                                    <Building2 size={14} className="text-text-muted" />
                                                                 )}
                                                             </div>
 
-                                                            <span className="text-[11px] text-zinc-400 font-semibold truncate group-hover:text-white transition-colors">{sub.nombre}</span>
+                                                            <span className="text-[11px] text-text-muted font-semibold truncate group-hover:text-foreground transition-colors">{sub.nombre}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -629,54 +629,54 @@ export default function EmpresasPage() {
 
                                         {/* Order History */}
                                         <div className="space-y-3">
-                                            <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2"><History size={12} />Historial de Pedidos</h4>
+                                            <h4 className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] flex items-center gap-2"><History size={12} />Historial de Pedidos</h4>
                                             {loadingSolicitudes ? (
-                                                <div className="flex items-center gap-2 py-4 text-zinc-600"><Loader2 size={14} className="animate-spin" /><span className="text-[10px] uppercase tracking-widest">Cargando...</span></div>
+                                                <div className="flex items-center gap-2 py-4 text-text-muted"><Loader2 size={14} className="animate-spin" /><span className="text-[10px] uppercase tracking-widest">Cargando...</span></div>
                                             ) : solicitudes.length > 0 ? (
                                                 <div className="space-y-1">
                                                     {solicitudes.map(s => (
-                                                        <div key={s.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-                                                            <Package size={14} className="text-zinc-600 shrink-0" />
-                                                            <span className="text-xs text-white font-bold">#{s.correlativo}</span>
-                                                            <span className="text-[10px] text-zinc-500">{s.muestrarios_tipos?.nombre}</span>
-                                                            {s.muestrarios_tipos?.version && <span className="text-[9px] text-zinc-600 bg-zinc-800/50 px-1.5 py-0.5 rounded">v{s.muestrarios_tipos.version}</span>}
-                                                            <span className="ml-auto text-[9px] text-zinc-600 flex items-center gap-1"><Clock size={9} />{new Date(s.created_at).toLocaleDateString()}</span>
-                                                            <span className="text-[9px] px-2 py-0.5 rounded bg-zinc-800/50 text-zinc-500 font-bold uppercase">{s.estado}</span>
+                                                        <div key={s.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-surface-2/30 hover:bg-surface-2/60 transition-colors">
+                                                            <Package size={14} className="text-text-muted shrink-0" />
+                                                            <span className="text-xs text-foreground font-bold">#{s.correlativo}</span>
+                                                            <span className="text-[10px] text-text-muted">{s.muestrarios_tipos?.nombre}</span>
+                                                            {s.muestrarios_tipos?.version && <span className="text-[9px] text-text-muted bg-surface-2 px-1.5 py-0.5 rounded border border-border">v{s.muestrarios_tipos.version}</span>}
+                                                            <span className="ml-auto text-[9px] text-text-muted flex items-center gap-1"><Clock size={9} />{new Date(s.created_at).toLocaleDateString()}</span>
+                                                            <span className="text-[9px] px-2 py-0.5 rounded bg-surface-2 text-text-muted font-bold uppercase border border-border">{s.estado}</span>
                                                         </div>
                                                     ))}
                                                 </div>
                                             ) : (
-                                                <p className="text-[10px] text-zinc-700 uppercase tracking-widest py-4 text-center bg-zinc-900/20 rounded-2xl border border-dashed border-zinc-800/50">Sin pedidos registrados</p>
+                                                <p className="text-[10px] text-text-muted uppercase tracking-widest py-4 text-center bg-surface-2/20 rounded-2xl border border-dashed border-border">Sin pedidos registrados</p>
                                             )}
                                         </div>
 
                                         {/* Actions */}
                                         <div className="grid grid-cols-4 gap-2 pt-2">
                                             <button onClick={() => handleOpenEdit(selectedEmpresa)}
-                                                className="bg-white/5 hover:bg-white/10 text-white font-bold py-3 rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-95 text-[10px] uppercase tracking-widest">
+                                                className="bg-surface-2 hover:bg-surface-2/80 text-foreground font-bold py-3 rounded-2xl border border-border transition-all flex items-center justify-center gap-2 active:scale-95 text-[10px] uppercase tracking-widest">
                                                 <Edit2 size={14} /> Editar
                                             </button>
                                             <button onClick={() => handleOpenCreate(selectedEmpresa)}
-                                                className="bg-violet-500/10 hover:bg-violet-500/20 text-violet-400 font-bold py-3 rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-95 text-[10px] uppercase tracking-widest">
+                                                className="bg-surface-2/50 hover:bg-accent/10 text-accent font-bold py-3 rounded-2xl border border-border transition-all flex items-center justify-center gap-2 active:scale-95 text-[10px] uppercase tracking-widest">
                                                 <Plus size={14} /> Sub-marca
                                             </button>
                                             <button onClick={() => {
                                                 router.push(`/solicitudes?empresa_id=${selectedEmpresa.id}&empresa_nombre=${encodeURIComponent(selectedEmpresa.nombre)}`);
                                             }}
-                                                className="bg-primary hover:bg-primary/90 text-black font-extrabold py-3 rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-95 text-[10px] uppercase tracking-widest">
+                                                className="bg-accent hover:brightness-110 text-text-inverse font-extrabold py-3 rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-95 text-[10px] uppercase tracking-widest shadow-[0_0_15px_var(--glow)]">
                                                 <ShoppingBag size={14} /> Nuevo Pedido
                                             </button>
                                             <button onClick={() => handleDelete(selectedEmpresa.id)}
-                                                className="bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-2xl transition-all flex items-center justify-center active:scale-95 py-3">
+                                                className="bg-danger/10 hover:bg-danger/20 text-danger rounded-2xl transition-all flex items-center justify-center active:scale-95 py-3 border border-danger/20">
                                                 <Trash2 size={16} />
                                             </button>
                                         </div>
                                     </div>
 
                                     {/* Right Column: Inventory */}
-                                    <div className="md:col-span-5 p-6 overflow-y-auto custom-scrollbar bg-zinc-950/40">
+                                    <div className="md:col-span-12 lg:col-span-5 p-6 overflow-y-auto custom-scrollbar bg-surface/40">
                                         <div className="flex items-center justify-between mb-4">
-                                            <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                                            <h4 className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] flex items-center gap-2">
                                                 <Package size={12} /> Muestrarios Creados ({muestrariosEmpresa.length})
                                             </h4>
                                             <button
@@ -707,7 +707,7 @@ export default function EmpresasPage() {
                                                         <select
                                                             value={assignData.tipo_id}
                                                             onChange={e => setAssignData({ ...assignData, tipo_id: e.target.value })}
-                                                            className="w-full bg-zinc-950 border border-border/50 rounded-xl px-3 py-2.5 text-xs text-white focus:ring-1 focus:ring-primary outline-none appearance-none"
+                                                            className="w-full bg-card border border-border/50 rounded-xl px-3 py-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary outline-none appearance-none"
                                                         >
                                                             <option value="">Selecciona producto...</option>
                                                             {allMuestrarioTypes.map(t => (
@@ -716,19 +716,19 @@ export default function EmpresasPage() {
                                                         </select>
                                                     </div>
                                                     <div className="space-y-1.5">
-                                                        <label className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest pl-1">Link Carpeta Drive</label>
+                                                        <label className="text-[9px] text-text-muted font-bold uppercase tracking-widest pl-1">Link Carpeta Drive</label>
                                                         <input
                                                             type="text"
                                                             value={assignData.link_drive}
                                                             onChange={e => setAssignData({ ...assignData, link_drive: e.target.value })}
                                                             placeholder="https://drive.google.com/..."
-                                                            className="w-full bg-zinc-950 border border-border/50 rounded-xl px-3 py-2.5 text-xs text-white focus:ring-1 focus:ring-primary outline-none placeholder:text-zinc-800"
+                                                            className="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-xs text-foreground focus:ring-1 focus:ring-accent outline-none placeholder:text-text-muted/50"
                                                         />
                                                     </div>
                                                     <div className="space-y-1.5">
-                                                        <label className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest pl-1">Imagen de Propuesta</label>
+                                                        <label className="text-[9px] text-text-muted font-bold uppercase tracking-widest pl-1">Imagen de Propuesta</label>
                                                         <div className="flex items-center gap-3">
-                                                            <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-zinc-950 border border-dashed border-border/50 rounded-xl cursor-pointer hover:border-primary/50 transition-all text-zinc-500 hover:text-zinc-300">
+                                                            <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-surface-2 border border-dashed border-border rounded-xl cursor-pointer hover:border-accent/50 transition-all text-text-muted hover:text-foreground">
                                                                 <Upload size={14} />
                                                                 <span className="text-[9px] font-black uppercase tracking-widest truncate">
                                                                     {assignData.proposal_file ? assignData.proposal_file.name : 'Subir imagen'}

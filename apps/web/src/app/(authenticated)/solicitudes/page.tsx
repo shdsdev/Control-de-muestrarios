@@ -156,11 +156,10 @@ function SolicitudesContent() {
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
-            {/* Page Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold text-white uppercase tracking-tight">Solicitudes</h2>
-                    <p className="text-muted-foreground text-[10px] uppercase tracking-[0.1em] font-medium mt-1">Gestión y seguimiento de ciclos de fabricación</p>
+                    <h2 className="text-2xl font-bold text-foreground uppercase tracking-tight">Solicitudes</h2>
+                    <p className="text-text-muted text-[10px] uppercase tracking-[0.1em] font-medium mt-1">Gestión y seguimiento de ciclos de fabricación</p>
                 </div>
                 <button
                     onClick={() => setIsDrawerOpen(true)}
@@ -171,8 +170,7 @@ function SolicitudesContent() {
                 </button>
             </div>
 
-            {/* Tabs & Filters */}
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-secondary/40 p-2 rounded-2xl border border-border/50">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-surface-2/40 p-2 rounded-2xl border border-border">
                 <div className="flex gap-1">
                     {[
                         { id: 'TODAS', label: 'Todas' },
@@ -186,8 +184,8 @@ function SolicitudesContent() {
                             className={cn(
                                 "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all",
                                 activeTab === tab.id
-                                    ? "bg-primary/10 text-primary shadow-sm"
-                                    : "text-muted-foreground hover:text-white hover:bg-white/5"
+                                    ? "bg-accent/10 text-accent shadow-sm"
+                                    : "text-text-muted hover:text-foreground hover:bg-surface-2"
                             )}
                         >
                             {tab.label}
@@ -197,25 +195,25 @@ function SolicitudesContent() {
 
                 <div className="flex items-center gap-3 w-full md:w-auto px-2">
                     <div className="relative flex-1 md:w-64">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={14} />
                         <input
                             type="text"
                             placeholder="Buscar por ID o Empresa..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full bg-[#09090b] border border-border rounded-xl py-2 pl-9 pr-4 text-xs focus:ring-1 focus:ring-primary focus:outline-none transition-all text-white placeholder:text-zinc-700"
+                            className="w-full bg-surface-2 border border-border rounded-xl py-2 pl-9 pr-4 text-xs focus:ring-1 focus:ring-accent focus:outline-none transition-all text-foreground placeholder:text-text-muted/50"
                         />
                     </div>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handleExport}
-                            className="p-2.5 rounded-xl border border-border hover:bg-primary/10 text-primary transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest"
+                            className="p-2.5 rounded-xl border border-border hover:bg-accent/10 text-accent transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest"
                             title="Exportar CSV"
                         >
                             <Download size={16} />
                             <span className="hidden lg:inline">Exportar</span>
                         </button>
-                        <button className="p-2.5 rounded-xl border border-border hover:bg-zinc-800 text-muted-foreground hover:text-white transition-all">
+                        <button className="p-2.5 rounded-xl border border-border hover:bg-surface-2 text-text-muted hover:text-foreground transition-all">
                             <Filter size={16} />
                         </button>
                     </div>
@@ -223,23 +221,23 @@ function SolicitudesContent() {
             </div>
 
             {/* Requests Table */}
-            <div className="bg-secondary/20 rounded-3xl overflow-hidden border border-border/50 shadow-2xl min-h-[400px]">
+            <div className="bg-surface/40 rounded-3xl overflow-hidden border border-border shadow-2xl min-h-[400px]">
                 {loading ? (
-                    <div className="flex flex-col items-center justify-center h-[400px] text-muted-foreground gap-4">
-                        <Loader2 className="animate-spin text-primary" size={32} />
+                    <div className="flex flex-col items-center justify-center h-[400px] text-text-muted gap-4">
+                        <Loader2 className="animate-spin text-accent" size={32} />
                         <p className="text-[10px] font-bold uppercase tracking-[0.3em] animate-pulse">Sincronizando datos de producción...</p>
                     </div>
                 ) : (
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="border-b border-border/50 bg-white/[0.01]">
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">ID Solicitud</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Empresa</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Tipo Producto</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Estado</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Estado SLA</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Fecha</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground text-center">Acciones</th>
+                            <tr className="border-b border-border bg-white/[0.01]">
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">ID Solicitud</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">Empresa</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">Tipo Producto</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">Estado</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">Estado SLA</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">Fecha</th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border/20">
@@ -247,18 +245,18 @@ function SolicitudesContent() {
                                 filteredSolicitudes.map((item) => {
                                     const sla = getSlaStatus(item);
                                     return (
-                                        <tr key={item.id} className="hover:bg-primary/[0.02] transition-colors group">
+                                        <tr key={item.id} className="hover:bg-accent/[0.02] transition-colors group">
                                             <td className="px-6 py-5">
-                                                <span className="text-white font-mono font-bold tracking-tight text-sm">S-{item.correlativo}</span>
+                                                <span className="text-foreground font-mono font-bold tracking-tight text-sm">S-{item.correlativo}</span>
                                             </td>
                                             <td className="px-6 py-5">
                                                 <div className="flex items-center gap-2">
-                                                    <Building2 size={14} className="text-muted-foreground" />
-                                                    <span className="text-zinc-200 text-xs font-semibold">{item.empresa?.nombre || 'Desconocida'}</span>
+                                                    <Building2 size={14} className="text-text-muted" />
+                                                    <span className="text-foreground text-xs font-semibold">{item.empresa?.nombre || 'Desconocida'}</span>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-5">
-                                                <span className="text-zinc-400 text-xs font-medium">{item.muestrarios_tipos?.nombre || 'General'}</span>
+                                                <span className="text-text-muted text-xs font-medium">{item.muestrarios_tipos?.nombre || 'General'}</span>
                                             </td>
                                             <td className="px-6 py-5">
                                                 <span className={cn(
@@ -272,8 +270,8 @@ function SolicitudesContent() {
                                                 <div className="flex items-center gap-2">
                                                     <div className={cn(
                                                         "w-1.5 h-1.5 rounded-full",
-                                                        sla.label === 'ATRASADO' ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" :
-                                                            sla.label === 'AJUSTADO' ? "bg-amber-500" : "bg-primary shadow-[0_0_8px_rgba(212,255,112,0.3)]"
+                                                        sla.label === 'ATRASADO' ? "bg-danger shadow-[0_0_8px_rgba(239,68,68,0.5)]" :
+                                                            sla.label === 'AJUSTADO' ? "bg-amber-500" : "bg-accent shadow-[0_0_8px_var(--glow)]"
                                                     )} />
                                                     <span className={cn("text-[10px] font-black uppercase tracking-tight", sla.color)}>
                                                         {sla.label}
@@ -282,16 +280,16 @@ function SolicitudesContent() {
                                             </td>
                                             <td className="px-6 py-5">
                                                 <div className="flex flex-col">
-                                                    <span className="text-xs text-zinc-300 font-medium">{new Date(item.created_at).toLocaleDateString()}</span>
-                                                    <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-tighter opacity-50">{item.perfiles?.nombre_completo || item.perfiles?.email || 'Sistema'}</span>
+                                                    <span className="text-xs text-foreground font-medium">{new Date(item.created_at).toLocaleDateString()}</span>
+                                                    <span className="text-[9px] text-text-muted font-bold uppercase tracking-tighter opacity-50">{item.perfiles?.nombre_completo || item.perfiles?.email || 'Sistema'}</span>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-5 text-center">
                                                 <div className="flex items-center justify-center gap-1">
-                                                    <button className="p-2 rounded-lg hover:bg-primary/20 text-muted-foreground hover:text-primary transition-all active:scale-95">
+                                                    <button className="p-2 rounded-lg hover:bg-accent/20 text-text-muted hover:text-accent transition-all active:scale-95">
                                                         <Eye size={16} />
                                                     </button>
-                                                    <button className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-white transition-all active:scale-95">
+                                                    <button className="p-2 rounded-lg hover:bg-surface-2 text-text-muted hover:text-foreground transition-all active:scale-95">
                                                         <MoreVertical size={16} />
                                                     </button>
                                                 </div>
@@ -313,11 +311,11 @@ function SolicitudesContent() {
                     </table>
                 )}
 
-                <div className="px-6 py-4 bg-white/[0.01] border-t border-border/30 flex items-center justify-between">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Mostrando {filteredSolicitudes.length} resultados</p>
+                <div className="px-6 py-4 bg-white/[0.01] border-t border-border flex items-center justify-between">
+                    <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Mostrando {filteredSolicitudes.length} resultados</p>
                     <div className="flex gap-2">
-                        <button className="px-3 py-1 rounded-lg border border-border text-[10px] font-bold uppercase tracking-widest text-muted-foreground disabled:opacity-30" disabled>Anterior</button>
-                        <button className="px-3 py-1 rounded-lg border border-border text-[10px] font-bold uppercase tracking-widest text-muted-foreground disabled:opacity-30" disabled>Siguiente</button>
+                        <button className="px-3 py-1 rounded-lg border border-border text-[10px] font-bold uppercase tracking-widest text-text-muted disabled:opacity-30" disabled>Anterior</button>
+                        <button className="px-3 py-1 rounded-lg border border-border text-[10px] font-bold uppercase tracking-widest text-text-muted disabled:opacity-30" disabled>Siguiente</button>
                     </div>
                 </div>
             </div>

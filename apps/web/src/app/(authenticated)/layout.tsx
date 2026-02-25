@@ -27,10 +27,10 @@ export default function DashboardLayout({
         localStorage.setItem('sidebar_collapsed', collapsed.toString());
     };
 
-    if (!isLoaded) return <div className="min-h-screen bg-[#09090b]" />;
+    if (!isLoaded) return <div className="min-h-screen bg-background" />;
 
     return (
-        <div className="flex min-h-screen bg-[#09090b] text-foreground">
+        <div className="flex min-h-screen bg-background text-foreground">
             <Sidebar isCollapsed={isCollapsed} setIsCollapsed={toggleSidebar} />
             <div
                 className={cn(
