@@ -1,0 +1,50 @@
+﻿id_log,status,timestamp,cliente_colaborador,empresa,email,tipo_solicitud,tipo_producto,producto,img_producto,cantidad,colores,logotipo,solicitud_esp,fecha_entrega,producto2,folio
+07056c32,Fabricación,14/08/2024 9:45:16,,f0fb2d138,Jorge Guerrero,Fabricación,Contrapeso Diamond,,,1,,https://www.appsheet.com/image/getimageurl?appName=TicketsDptoDeMarketing-938841637&tableName=muestrarios&fileName=empresa_Images%2Ff0fb2d138.logotipo.193647.png&appVersion=1.000640&signature=4e3b87966d068d4c27052b3701e77c2ce97fd5f5335a4167a2383e30564723ca,,,bf863618,
+688dba2e,Espera de Cliente,14/08/2024 17:10:57,GUADALUPE GUZMAN RAMOS,c1bc0625,Claudia Sanchéz ,Diseño de Propuesta,Muestrarios,90b5a536,,,,https://www.appsheet.com/image/getimageurl?appName=TicketsDptoDeMarketing-938841637&tableName=muestrarios&fileName=empresa_Images%2Fc1bc0625.logotipo.174606.jpg&appVersion=1.000813&signature=b6a03d9ebe2091a7d5eec9f19438499d19d3194cb991413ac2be1918db6ec621,,,,
+,,,,,,,,,,,,,,,,
+6de8be07,Pendiente,02/09/2024 12:23:00,,f0fb2d146,Jazmin Amezcua,Fabricación,Muestrarios,dcdd2ee2,,20,,empresa::empresa_Images/f0fb2d146.logotipo.194055.png,,,,M4111
+53eaa977,Pendiente,02/09/2024 12:26:00,,f0fb2d146,Jazmin Amezcua,Fabricación,Muestrarios,efecaddd,,20,,empresa::empresa_Images/f0fb2d146.logotipo.194055.png,,,,M6662
+0408145b,Pendiente,02/09/2024 12:26:00,,f0fb2d146,Jazmin Amezcua,Fabricación,Muestrarios,5d3d9646,,20,,empresa::empresa_Images/f0fb2d146.logotipo.194055.png,,,,M2369
+b6f2a9e8,Pendiente,03/09/2024 12:04:00,,f0fb2d145,Javier Enriquez,Fabricación,Muestrarios,bf863617,,25,,empresa::empresa_Images/f0fb2d145.logotipo.194011.png,Complemento de folio 4227,,,M4068
+b06c25e6,Diseño de Propuesta,03/09/2024 18:38:00,,f0fb2d50,Jazmin Amezcua,Diseño de Propuesta,Muestrarios,efecaddd,,,,empresa::empresa_Images/f0fb2d50.logotipo.174607.png,,,,M2151
+8b9d0e64,Diseño de Propuesta,05/09/2024 16:55:00,FABIOLA GUILLEN HERNANDEZ,ec3dbb5d,Claudia Sanchéz ,Diseño de Propuesta,Muestrarios,af400a02,,,,,,,,M8498
+6d55c6db,Pendiente,05/09/2024 17:02:00,,f0fb2d105,Claudia Sanchéz ,Fabricación,Muestrarios,90b5a536,,25,,empresa::empresa_Images/f0fb2d105.logotipo.191354.png,Re-Etiquetado de Telas,,,M7708
+5f67f747,Pendiente,06/09/2024 15:29:00,,22c1f3b4,,Fabricación,Muestrarios,edccaad6,,50,,empresa::empresa_Images/22c1f3b4.logotipo.185800.jpg,Impresion de Blinder - Recorte de ventana (Color BCO) - Agregar recorte de tela Screen Milan Pewter (IZQ) BO Montreal Grey (DER),,,M8917
+909b4858,Pendiente,06/09/2024 17:29:00,,f161709d,Javier Enriquez,Fabricación,Muestrarios,efecaddd,,100,,empresa::empresa_Images/f161709d.logotipo.210233.jpg,prueba,,,M8448
+2508d5c9,Pendiente,13/09/2024 11:06:00,,f0fb2d125,Claudia Sanchéz ,Fabricación,Contrapeso Diamond,,,1000,,empresa::empresa_Images/f0fb2d125.logotipo.193003.png,,,bf863618,M7969
+ae1b46a2,Pendiente,13/09/2024 11:33:00,,f0fb2d71,Claudia Sanchéz ,Fabricación,Contrapeso Diamond,,,1000,,empresa::empresa_Images/f0fb2d71.logotipo.181413.png,,,bf863618,M9921
+a620844f,Pendiente,13/09/2024 11:55:00,Jorge Guerrero,1c018b46,Javier Enriquez,Fabricación,Muestrarios,efecaddd,,1000000,,empresa::empresa_Images/1c018b46.logotipo.195853.jpg,Pruebas,,,M8178
+ba8457df,Pendiente,13/09/2024 11:58:00,,f161709d,Javier Enriquez,Fabricación,Muestrarios,efecaddd,,100,,empresa::empresa_Images/f161709d.logotipo.210233.jpg,prueba,,,M1755
+5ffefe89,Pendiente,13/09/2024 12:02:00,,22c1f3b4,Javier Enriquez,Fabricación,Muestrarios,efecaddd,,152,,empresa::empresa_Images/22c1f3b4.logotipo.185800.jpg,prueba,,,M4798
+62903911,Diseño de Propuesta,13/09/2024 13:43:00,,f0fb2d103,Jorge Guerrero,Diseño de Propuesta,Muestrarios,23e3ae37,,1,,empresa::empresa_Images/f0fb2d103.logotipo.191235.png,,,,M9567
+9958b3e0,Diseño de Propuesta,13/09/2024 14:04:00,,4bf2a2fc,,Diseño de Propuesta,Muestrarios,23e3ae37,,1,,,,,,M732
+3a573759,Diseño de Propuesta,13/09/2024 14:14:00,,4bf2a2fc,Jorge Guerrero,Diseño de Propuesta,Muestrarios,23e3ae37,,1,,empresa::empresa_Images/4bf2a2fc.logotipo.201024.png,,,,M9401
+fda7f03b,Diseño de Propuesta,17/09/2024 15:57:00,RICARDO MARTINEZ MORAN,2d93f20a,Jazmin Amezcua,Diseño de Propuesta,Muestrarios,efecaddd,,1,,empresa::empresa_Images/2d93f20a.logotipo.200231.jpg,,,,M4945
+a9c6db2b,Pendiente,18/09/2024 8:57:00,,f0fb2d46,Claudia Sanchéz ,Fabricación,Contrapeso Diamond,,,2000,,empresa::empresa_Images/f0fb2d46.logotipo.174219.jpg,,,bf863618,M8551
+09bc3e2b,Diseño de Propuesta,18/09/2024 10:38:00,,f0fb2d125,Jorge Guerrero,Diseño de Propuesta,Muestrarios,efecaddd,,1,,empresa::empresa_Images/f0fb2d125.logotipo.193003.png,,,,M3219
+ab4c3326,Pendiente,28/09/2024 11:07:00,Jorge Guerrero,1c018b46,Jorge Guerrero,Fabricación,Muestrarios,efecaddd,,300,,empresa::empresa_Images/1c018b46.logotipo.195853.jpg,Estos muestrarios,,,M9829
+d79108fa,Pendiente,28/09/2024 11:09:00,Jorge Guerrero,1c018b46,Jorge Guerrero,Fabricación,Muestrarios,5d3d9646,,500,,empresa::empresa_Images/1c018b46.logotipo.195853.jpg,"Estos muestrarios se estarían entregando parcialmente, octubre 200, noviembre 200 Y",,,M4955
+4d827728,Pendiente,03/10/2024 14:40:00,,f0fb2d98,Jorge Guerrero,Fabricación,Muestrarios,a7a9b336,,100,,empresa::empresa_Images/f0fb2d98.logotipo.191028.jpg,,,,M7870
+d092f266,Pendiente,03/10/2024 14:40:00,,f0fb2d120,Jorge Guerrero,Fabricación,Muestrarios,a7a9b336,,100,,empresa::empresa_Images/f0fb2d120.logotipo.192224.png,,,,M3033
+09b489f2,Pendiente,04/10/2024 14:47:00,,a3c0f724,Javier Enriquez,Fabricación,Muestrarios,a7a9b336,,1000,,empresa::empresa_Images/a3c0f724.logotipo.205339.jpg,,,,M1972
+7c745a26,Diseño de Propuesta,08/10/2024 16:49:00,,f0fb2d46,Jazmin Amezcua,Diseño de Propuesta,Muestrarios,efecaddd,,1,,empresa::empresa_Images/f0fb2d46.logotipo.174219.jpg,,,,M3608
+f4edb497,Diseño de Propuesta,08/10/2024 16:50:00,,f0fb2d46,Jazmin Amezcua,Diseño de Propuesta,Muestrarios,5d3d9646,,1,,empresa::empresa_Images/f0fb2d46.logotipo.174219.jpg,,,,M3968
+3d4e38b4,Diseño de Propuesta,08/10/2024 16:51:00,,f0fb2d148,Jazmin Amezcua,Diseño de Propuesta,Muestrarios,efecaddd,,1,,empresa::empresa_Images/f0fb2d148.logotipo.194315.jpg,,,,M9273
+aed84829,Diseño de Propuesta,08/10/2024 16:51:00,,f0fb2d148,Jazmin Amezcua,Diseño de Propuesta,Muestrarios,5d3d9646,,1,,empresa::empresa_Images/f0fb2d148.logotipo.194315.jpg,,,,M4442
+07576d0a,Diseño de Propuesta,08/10/2024 17:25:00,,a3c0f724,Javier Enriquez,Diseño de Propuesta,Muestrarios,cf6e1ce9,,1,,empresa::empresa_Images/a3c0f724.logotipo.205339.jpg,Prueba,,,M7044
+4f5d045c,Diseño de Propuesta,08/10/2024 17:33:00,,15add3cc,Javier Enriquez,Diseño de Propuesta,Muestrarios,54a45108,,1,,empresa::empresa_Images/15add3cc.logotipo.165430.jpg,prueba,,,M9597
+0b20f294,Diseño de Propuesta,08/10/2024 17:46:00,,a3c0f724,Javier Enriquez,Diseño de Propuesta,Muestrarios,90b5a536,,1,,empresa::empresa_Images/a3c0f724.logotipo.205339.jpg,prueba,,,M8511
+c994160a,Pendiente,08/10/2024 17:55:00,,a3c0f724,Javier Enriquez,Fabricación,Muestrarios,a7a9b336,,10,,empresa::empresa_Images/a3c0f724.logotipo.205339.jpg,prueba,,,M2230
+ee606737,Diseño de Propuesta,08/10/2024 17:55:00,,13d98fe5,Jazmin Amezcua,Diseño de Propuesta,Muestrarios,a7a9b336,,1,,empresa::empresa_Images/13d98fe5.logotipo.211118.png,prueba,,,M106
+7ce5e0fe,Diseño de Propuesta,08/10/2024 18:00:00,,f161709d,Javier Enriquez,Diseño de Propuesta,Muestrarios,efecaddd,,1,,empresa::empresa_Images/f161709d.logotipo.210233.jpg,prueba,,,M7522
+98e649f2,Diseño de Propuesta,08/10/2024 18:11:00,,13d98fe5,Jorge Guerrero,Diseño de Propuesta,Muestrarios,af400a02,,1,,empresa_Images/13d98fe5.logotipo.211118.png,prueba,,,M
+69c4656b,Diseño de Propuesta,09/10/2024 15:38:00,,f0fb2d148,Jazmin Amezcua,Diseño de Propuesta,Muestrarios,efecaddd,,1,,empresa::empresa_Images/f0fb2d148.logotipo.194315.jpg,,,,M7612
+1599875f,Diseño de Propuesta,09/10/2024 15:41:00,,f0fb2d148,Jazmin Amezcua,Diseño de Propuesta,Muestrarios,5d3d9646,,1,,empresa::empresa_Images/f0fb2d148.logotipo.194315.jpg,,,,M1261
+d45121b7,Diseño de Propuesta,09/10/2024 15:43:00,,f0fb2d46,Jazmin Amezcua,Diseño de Propuesta,Muestrarios,efecaddd,,1,,empresa::empresa_Images/f0fb2d46.logotipo.174219.jpg,,,,M8789
+f0ad38d8,Diseño de Propuesta,09/10/2024 15:46:00,,f0fb2d46,Jazmin Amezcua,Diseño de Propuesta,Muestrarios,5d3d9646,,1,,empresa::empresa_Images/f0fb2d46.logotipo.174219.jpg,,,,M8850
+281795ff,Pendiente,10/10/2024 14:42:00,,f161709d,Jazmin Amezcua,Fabricación,Muestrarios,5d3d9646,,25,,empresa::empresa_Images/f161709d.logotipo.210233.jpg,URGENCIA,,,M4429
+11b25eae,Pendiente,11/10/2024 13:16:00,,f0fb2d46,Jazmin Amezcua,Fabricación,Muestrarios,bf863617,,30,,empresa::empresa_Images/f0fb2d46.logotipo.174219.jpg,,,,M8564
+5aad946f,Pendiente,11/10/2024 13:31:00,,f0fb2d46,Jazmin Amezcua,Fabricación,Muestrarios,90b5a536,,60,,empresa::empresa_Images/f0fb2d46.logotipo.174219.jpg,,,,M5822
+e74ff223,Pendiente,12/10/2024 9:14:00,,f0fb2d123,Claudia Sanchéz ,Fabricación,Contrapeso Diamond,,,6000,,empresa::empresa_Images/f0fb2d123.logotipo.192840.png,,,bf863618,M4454
+0df9d7cb,Pendiente,14/10/2024 17:05:00,,f0fb2d148,Jazmin Amezcua,Fabricación,Muestrarios,efecaddd,,50,,empresa::empresa_Images/f0fb2d148.logotipo.194315.jpg,,,,M5946
+bd342498,Pendiente,14/10/2024 17:06:00,,f0fb2d148,Jazmin Amezcua,Fabricación,Muestrarios,5d3d9646,,20,,empresa::empresa_Images/f0fb2d148.logotipo.194315.jpg,,,,M1284

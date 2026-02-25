@@ -1,0 +1,13 @@
+{
+  "name": "shades-swatch-platform",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev -w apps/web",
+    "dev:mobile": "npm run start -w apps/mobile"
+  }
+}
