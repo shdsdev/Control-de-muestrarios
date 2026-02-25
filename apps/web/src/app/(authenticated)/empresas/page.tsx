@@ -85,6 +85,16 @@ export default function EmpresasPage() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [sacFilter, setSacFilter] = useState<string>('TODOS');
+    const [brokenLogos, setBrokenLogos] = useState<Set<string>>(new Set());
+
+    const handleLogoError = (url: string) => {
+        setBrokenLogos(prev => {
+            const next = new Set(prev);
+            next.add(url);
+            return next;
+        });
+    };
+
 
     // Modal states
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -481,16 +491,18 @@ export default function EmpresasPage() {
                             >
                                 {/* Logo */}
                                 <div className="aspect-square w-full bg-zinc-950/80 flex items-center justify-center p-4 relative overflow-hidden">
-                                    {empresa.logo_url ? (
+                                    {empresa.logo_url && !brokenLogos.has(empresa.logo_url) ? (
                                         <img
                                             src={empresa.logo_url}
                                             alt={empresa.nombre}
                                             className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
-                                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                            loading="lazy"
+                                            onError={() => handleLogoError(empresa.logo_url!)}
                                         />
                                     ) : (
                                         <Building2 size={40} className="text-zinc-800 group-hover:text-zinc-700 transition-colors" />
                                     )}
+
                                     {subs > 0 && (
                                         <div className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 bg-violet-500/20 border border-violet-500/30 rounded-md backdrop-blur-sm">
                                             <GitBranch size={8} className="text-violet-400" />
@@ -546,12 +558,18 @@ export default function EmpresasPage() {
                                     <div className="md:col-span-7 p-6 overflow-y-auto custom-scrollbar border-r border-white/[0.03] space-y-6">
                                         <div className="flex items-start gap-5">
                                             <div className="w-24 h-24 rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center overflow-hidden shrink-0 shadow-2xl">
-                                                {selectedEmpresa.logo_url ? (
-                                                    <img src={selectedEmpresa.logo_url} className="w-full h-full object-contain p-2" alt="" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                                {selectedEmpresa.logo_url && !brokenLogos.has(selectedEmpresa.logo_url) ? (
+                                                    <img
+                                                        src={selectedEmpresa.logo_url}
+                                                        className="w-full h-full object-contain p-2"
+                                                        alt=""
+                                                        onError={() => handleLogoError(selectedEmpresa.logo_url!)}
+                                                    />
                                                 ) : (
                                                     <Building2 size={36} className="text-zinc-700" />
                                                 )}
                                             </div>
+
                                             <div className="flex-1 space-y-3">
                                                 <div className="flex items-center gap-2 flex-wrap">
                                                     <span className={cn("px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border", getStatusStyle(selectedEmpresa.status))}>
@@ -590,8 +608,18 @@ export default function EmpresasPage() {
                                                         <div key={sub.id} onClick={() => handleOpenDetail(sub)}
                                                             className="bg-zinc-900/50 rounded-xl border border-white/[0.04] p-3 flex items-center gap-3 cursor-pointer hover:border-violet-500/30 transition-all group">
                                                             <div className="w-10 h-10 rounded-lg bg-zinc-950 border border-white/5 flex items-center justify-center overflow-hidden shrink-0">
-                                                                {sub.logo_url ? <img src={sub.logo_url} className="w-full h-full object-contain p-1" alt="" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> : <Building2 size={14} className="text-zinc-700" />}
+                                                                {sub.logo_url && !brokenLogos.has(sub.logo_url) ? (
+                                                                    <img
+                                                                        src={sub.logo_url}
+                                                                        className="w-full h-full object-contain p-1"
+                                                                        alt=""
+                                                                        onError={() => handleLogoError(sub.logo_url!)}
+                                                                    />
+                                                                ) : (
+                                                                    <Building2 size={14} className="text-zinc-700" />
+                                                                )}
                                                             </div>
+
                                                             <span className="text-[11px] text-zinc-400 font-semibold truncate group-hover:text-white transition-colors">{sub.nombre}</span>
                                                         </div>
                                                     ))}

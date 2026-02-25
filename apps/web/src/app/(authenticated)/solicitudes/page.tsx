@@ -16,7 +16,7 @@ import {
     ClipboardList
 } from 'lucide-react';
 import { cn, downloadAsCsv } from '@/lib/utils';
-import NewRequestDrawer from '@/components/solicitudes/NewRequestDrawer';
+import WizardSolicitud from '@/components/solicitudes/WizardSolicitud';
 
 type SolicitudLive = {
     id: string;
@@ -76,36 +76,47 @@ function SolicitudesContent() {
     const fetchSolicitudes = async () => {
         setLoading(true);
 
-        let query = supabase
-            .from('solicitudes')
-            .select(`
-          id,
-          correlativo,
-          estado,
-          created_at,
-          ajuste_urgencia,
-          fecha_promesa,
-          empresa:empresas(nombre, codigo_cliente),
-          muestrarios_tipos(nombre),
-          perfiles(nombre_completo, email)
-        `);
+        try {
+            let query = supabase
+                .from('solicitudes')
+                .select(`
+                    id,
+                    correlativo,
+                    estado,
+                    created_at,
+                    ajuste_urgencia,
+                    fecha_promesa,
+                    empresa:empresas(nombre, codigo_cliente),
+                    muestrarios_tipos:tipo_id(nombre),
+                    perfiles:solicitante_id(nombre_completo, email)
+                `);
 
-        // Tab filtering
-        if (activeTab === 'PENDIENTES') {
-            query = query.in('estado', ['ENVIADA', 'VALIDADA']);
-        } else if (activeTab === 'EN_PROGRESO') {
-            query = query.in('estado', ['EN_PRODUCCION', 'PRODUCCION_TERMINADA', 'EN_TRASLADO_INTERNO']);
-        } else if (activeTab === 'COMPLETADAS') {
-            query = query.in('estado', ['RECIBIDA_ALMACEN', 'LISTA_PARA_ENVIO', 'ENVIADA_CLIENTE', 'ENTREGADA', 'CERRADA']);
+            // Tab filtering
+            if (activeTab === 'PENDIENTES') {
+                query = query.in('estado', ['ENVIADA', 'VALIDADA']);
+            } else if (activeTab === 'EN_PROGRESO') {
+                query = query.in('estado', ['EN_PRODUCCION', 'PRODUCCION_TERMINADA', 'EN_TRASLADO_INTERNO']);
+            } else if (activeTab === 'COMPLETADAS') {
+                query = query.in('estado', ['RECIBIDA_ALMACEN', 'LISTA_PARA_ENVIO', 'ENVIADA_CLIENTE', 'ENTREGADA', 'CERRADA']);
+            }
+
+            const { data, error } = await query.order('correlativo', { ascending: false });
+
+            if (error) {
+                console.error('ERROR FETCHING SOLICITUDES:', error);
+                throw error;
+            }
+
+            if (data) {
+                setSolicitudes(data as any);
+            }
+        } catch (err) {
+            console.error('CATCH FETCHING SOLICITUDES:', err);
+        } finally {
+            setLoading(false);
         }
-
-        const { data, error } = await query.order('correlativo', { ascending: false });
-
-        if (!error && data) {
-            setSolicitudes(data as any);
-        }
-        setLoading(false);
     };
+
 
     useEffect(() => {
         fetchSolicitudes();
@@ -311,7 +322,7 @@ function SolicitudesContent() {
                 </div>
             </div>
 
-            <NewRequestDrawer
+            <WizardSolicitud
                 isOpen={isDrawerOpen}
                 onClose={() => {
                     setIsDrawerOpen(false);
