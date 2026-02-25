@@ -1,0 +1,37 @@
+// Mexico states and main municipalities
+export const MEXICO_STATES: Record<string, string[]> = {
+    'Aguascalientes': ['Aguascalientes', 'Calvillo', 'Jesús María', 'Pabellón de Arteaga', 'Rincón de Romos', 'San Francisco de los Romo'],
+    'Baja California': ['Ensenada', 'Mexicali', 'Playas de Rosarito', 'Tecate', 'Tijuana'],
+    'Baja California Sur': ['Comondú', 'La Paz', 'Loreto', 'Los Cabos', 'Mulegé'],
+    'Campeche': ['Calakmul', 'Calkiní', 'Campeche', 'Candelaria', 'Carmen', 'Champotón', 'Hecelchakán', 'Hopelchén', 'Palizada', 'Seybaplaya', 'Tenabo'],
+    'Chiapas': ['Berriozábal', 'Chiapa de Corzo', 'Comitán de Domínguez', 'Ocosingo', 'Palenque', 'San Cristóbal de las Casas', 'Tapachula', 'Tonalá', 'Tuxtla Gutiérrez', 'Villaflores'],
+    'Chihuahua': ['Camargo', 'Chihuahua', 'Cuauhtémoc', 'Delicias', 'Hidalgo del Parral', 'Juárez', 'Meoqui', 'Nuevo Casas Grandes', 'Ojinaga'],
+    'Ciudad de México': ['Álvaro Obregón', 'Azcapotzalco', 'Benito Juárez', 'Coyoacán', 'Cuajimalpa', 'Cuauhtémoc', 'Gustavo A. Madero', 'Iztacalco', 'Iztapalapa', 'Magdalena Contreras', 'Miguel Hidalgo', 'Milpa Alta', 'Tláhuac', 'Tlalpan', 'Venustiano Carranza', 'Xochimilco'],
+    'Coahuila': ['Acuña', 'Allende', 'Frontera', 'Monclova', 'Múzquiz', 'Piedras Negras', 'Ramos Arizpe', 'Sabinas', 'Saltillo', 'San Pedro', 'Torreón'],
+    'Colima': ['Armería', 'Colima', 'Comala', 'Coquimatlán', 'Cuauhtémoc', 'Ixtlahuacán', 'Manzanillo', 'Minatitlán', 'Tecomán', 'Villa de Álvarez'],
+    'Durango': ['Canatlán', 'Durango', 'El Oro', 'Gómez Palacio', 'Guadalupe Victoria', 'Lerdo', 'Mapimí', 'Nombre de Dios', 'Poanas', 'Santiago Papasquiaro'],
+    'Estado de México': ['Atizapán de Zaragoza', 'Chalco', 'Chimalhuacán', 'Coacalco', 'Cuautitlán Izcalli', 'Ecatepec', 'Huixquilucan', 'Ixtapaluca', 'Metepec', 'Naucalpan', 'Nezahualcóyotl', 'Nicolás Romero', 'Tlalnepantla', 'Toluca', 'Tultitlán'],
+    'Guanajuato': ['Celaya', 'Dolores Hidalgo', 'Guanajuato', 'Irapuato', 'León', 'Salamanca', 'San Francisco del Rincón', 'San Miguel de Allende', 'Silao'],
+    'Guerrero': ['Acapulco', 'Chilapa', 'Chilpancingo', 'Iguala', 'Taxco', 'Zihuatanejo'],
+    'Hidalgo': ['Actopan', 'Huejutla', 'Ixmiquilpan', 'Mineral de la Reforma', 'Pachuca', 'Tizayuca', 'Tula de Allende', 'Tulancingo'],
+    'Jalisco': ['Guadalajara', 'El Salto', 'Lagos de Moreno', 'Puerto Vallarta', 'Tlajomulco', 'Tlaquepaque', 'Tonalá', 'Zapopan'],
+    'Michoacán': ['Apatzingán', 'Hidalgo', 'La Piedad', 'Lázaro Cárdenas', 'Morelia', 'Pátzcuaro', 'Uruapan', 'Zamora', 'Zitácuaro'],
+    'Morelos': ['Ayala', 'Cuautla', 'Cuernavaca', 'Jiutepec', 'Jojutla', 'Temixco', 'Xochitepec', 'Yautepec'],
+    'Nayarit': ['Bahía de Banderas', 'Compostela', 'Santiago Ixcuintla', 'Tepic', 'Xalisco'],
+    'Nuevo León': ['Apodaca', 'Cadereyta', 'García', 'General Escobedo', 'Guadalupe', 'Juárez', 'Linares', 'Monterrey', 'San Nicolás de los Garza', 'San Pedro Garza García', 'Santa Catarina'],
+    'Oaxaca': ['Huajuapan', 'Juchitán', 'Oaxaca de Juárez', 'Salina Cruz', 'San Juan Bautista Tuxtepec', 'Santa Cruz Xoxocotlán', 'Santa Lucía del Camino'],
+    'Puebla': ['Atlixco', 'Cholula', 'Huauchinango', 'Puebla', 'San Andrés Cholula', 'San Martín Texmelucan', 'Tehuacán', 'Teziutlán'],
+    'Querétaro': ['Corregidora', 'El Marqués', 'Querétaro', 'San Juan del Río'],
+    'Quintana Roo': ['Benito Juárez (Cancún)', 'Chetumal', 'Cozumel', 'Felipe Carrillo Puerto', 'Isla Mujeres', 'Playa del Carmen', 'Tulum'],
+    'San Luis Potosí': ['Ciudad Valles', 'Matehuala', 'Rioverde', 'San Luis Potosí', 'Soledad de Graciano Sánchez', 'Tamazunchale'],
+    'Sinaloa': ['Ahome (Los Mochis)', 'Culiacán', 'Guasave', 'Mazatlán', 'Navolato'],
+    'Sonora': ['Cajeme (Ciudad Obregón)', 'Guaymas', 'Hermosillo', 'Navojoa', 'Nogales', 'Puerto Peñasco', 'San Luis Río Colorado'],
+    'Tabasco': ['Cárdenas', 'Centro (Villahermosa)', 'Comalcalco', 'Cunduacán', 'Huimanguillo', 'Macuspana', 'Paraíso'],
+    'Tamaulipas': ['Altamira', 'Ciudad Madero', 'Ciudad Victoria', 'Matamoros', 'Nuevo Laredo', 'Reynosa', 'Tampico'],
+    'Tlaxcala': ['Apizaco', 'Chiautempan', 'Huamantla', 'Tlaxcala'],
+    'Veracruz': ['Boca del Río', 'Coatepec', 'Coatzacoalcos', 'Córdoba', 'Minatitlán', 'Orizaba', 'Poza Rica', 'Veracruz', 'Xalapa'],
+    'Yucatán': ['Kanasín', 'Mérida', 'Progreso', 'Tizimín', 'Umán', 'Valladolid'],
+    'Zacatecas': ['Fresnillo', 'Guadalupe', 'Jerez', 'Río Grande', 'Zacatecas']
+};
+
+export const ESTADO_NAMES = Object.keys(MEXICO_STATES).sort();
