@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CustomSelect } from '@/components/ui/custom-select';
+import { ImageWithFallback } from '@/components/ui/image-with-fallback';
 
 type Perfil = {
     id: string;
@@ -364,19 +365,19 @@ export default function UsuariosPage() {
                                     >
                                         <td className="px-6 py-5">
                                             <div className="flex items-center gap-3">
-                                                {item.avatar_url ? (
-                                                    <img src={item.avatar_url} className="w-10 h-10 rounded-full object-cover border border-white/10" alt="" />
-                                                ) : (() => {
-                                                    const c = getAvatarColor(item.id);
-                                                    return (
-                                                        <div className={cn(
-                                                            "w-10 h-10 rounded-full border flex items-center justify-center transition-all",
-                                                            c.bg, c.border, c.text, c.glow
-                                                        )}>
-                                                            <User size={18} />
-                                                        </div>
-                                                    );
-                                                })()}
+                                                <ImageWithFallback
+                                                    src={item.avatar_url}
+                                                    alt={item.nombre_completo || ''}
+                                                    className="w-10 h-10 rounded-full border border-white/10"
+                                                    fallbackIcon={User}
+                                                    iconClassName={cn(
+                                                        "w-10 h-10 rounded-full border flex items-center justify-center transition-all",
+                                                        getAvatarColor(item.id).bg,
+                                                        getAvatarColor(item.id).border,
+                                                        getAvatarColor(item.id).text,
+                                                        getAvatarColor(item.id).glow
+                                                    )}
+                                                />
                                                 <div className="flex flex-col">
                                                     <span className="text-white font-bold text-sm tracking-tight">{item.nombre_completo || 'Sin nombre'}</span>
                                                     <div className="flex items-center gap-1 text-[10px] text-zinc-500 font-medium">
@@ -509,19 +510,18 @@ export default function UsuariosPage() {
                                 <div className="space-y-8">
                                     <div className="flex gap-8">
                                         <div className="w-48 h-48 rounded-3xl border border-white/5 flex items-center justify-center overflow-hidden shrink-0 group">
-                                            {selectedUsuario?.avatar_url ? (
-                                                <img src={selectedUsuario.avatar_url} className="w-full h-full object-cover transition-transform group-hover:scale-110" alt="" />
-                                            ) : (() => {
-                                                const c = selectedUsuario ? getAvatarColor(selectedUsuario.id) : avatarNeonColors[7];
-                                                return (
-                                                    <div className={cn(
+                                            <ImageWithFallback
+                                                src={selectedUsuario?.avatar_url}
+                                                alt={selectedUsuario?.nombre_completo || ''}
+                                                fallbackIcon={User}
+                                                iconClassName={(() => {
+                                                    const c = selectedUsuario ? getAvatarColor(selectedUsuario.id) : avatarNeonColors[7];
+                                                    return cn(
                                                         "w-full h-full flex items-center justify-center",
                                                         c.bg, c.text
-                                                    )} style={{ boxShadow: `inset 0 0 40px ${c.glow.includes('red') ? 'rgba(239,68,68,0.1)' : c.glow.includes('pink') ? 'rgba(236,72,153,0.1)' : c.glow.includes('violet') ? 'rgba(139,92,246,0.1)' : c.glow.includes('blue') ? 'rgba(59,130,246,0.1)' : c.glow.includes('cyan') ? 'rgba(34,211,238,0.1)' : c.glow.includes('emerald') ? 'rgba(52,211,153,0.1)' : c.glow.includes('amber') ? 'rgba(251,191,36,0.1)' : 'rgba(161,161,170,0.05)'}` }}>
-                                                        <User size={64} strokeWidth={1.5} />
-                                                    </div>
-                                                );
-                                            })()}
+                                                    );
+                                                })()}
+                                            />
                                         </div>
                                         <div className="flex-1 space-y-4">
                                             <div className="flex items-center gap-3">
@@ -700,7 +700,7 @@ export default function UsuariosPage() {
                                             </label>
                                             {formData.avatar_url && !uploading && (
                                                 <div className="mt-2 w-20 h-20 rounded-full overflow-hidden border border-white/10">
-                                                    <img src={formData.avatar_url} alt="Preview" className="w-full h-full object-cover" />
+                                                    <ImageWithFallback src={formData.avatar_url} alt="Preview" fallbackIcon={User} />
                                                 </div>
                                             )}
                                         </div>

@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CustomSelect } from '@/components/ui/custom-select';
+import { ImageWithFallback } from '@/components/ui/image-with-fallback';
 
 type Producto = {
     id: string;
@@ -230,11 +231,12 @@ export default function ProductosPage() {
                                     >
                                         <td className="px-6 py-4">
                                             <div className="w-12 h-12 bg-zinc-900 rounded-xl border border-white/5 flex items-center justify-center overflow-hidden shrink-0 group-hover:border-primary/30 transition-colors">
-                                                {item.imagen_url ? (
-                                                    <img src={item.imagen_url} alt={item.nombre} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
-                                                ) : (
-                                                    <ImageIcon className="text-zinc-800" size={20} />
-                                                )}
+                                                <ImageWithFallback
+                                                    src={item.imagen_url}
+                                                    alt={item.nombre}
+                                                    fallbackIcon={ImageIcon}
+                                                    iconClassName="text-zinc-800"
+                                                />
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">
@@ -344,11 +346,12 @@ export default function ProductosPage() {
                                 <div className="space-y-8">
                                     <div className="flex gap-8">
                                         <div className="w-48 h-48 bg-zinc-900 rounded-3xl border border-white/5 flex items-center justify-center overflow-hidden shrink-0 group">
-                                            {selectedProducto?.imagen_url ? (
-                                                <img src={selectedProducto.imagen_url} alt={selectedProducto.nombre} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
-                                            ) : (
-                                                <ImageIcon className="text-zinc-800" size={48} />
-                                            )}
+                                            <ImageWithFallback
+                                                src={selectedProducto?.imagen_url}
+                                                alt={selectedProducto?.nombre}
+                                                fallbackIcon={ImageIcon}
+                                                iconClassName="text-zinc-800"
+                                            />
                                         </div>
                                         <div className="flex-1 space-y-4">
                                             <div className="flex items-center gap-3">
@@ -525,7 +528,7 @@ export default function ProductosPage() {
                                                 </label>
                                                 {formData.imagen_url && !uploading && (
                                                     <div className="mt-2 w-20 h-20 rounded-xl overflow-hidden border border-white/10">
-                                                        <img src={formData.imagen_url} alt="Preview" className="w-full h-full object-cover" />
+                                                        <ImageWithFallback src={formData.imagen_url} alt="Preview" />
                                                     </div>
                                                 )}
                                             </div>

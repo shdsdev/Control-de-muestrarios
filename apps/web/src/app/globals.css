@@ -235,3 +235,17 @@ select option {
   background: var(--border);
   border-radius: 10px;
 }
+
+/* Sidebar Logo theme-aware inversion */
+.sidebar-logo {
+  transition: filter 0.3s ease;
+}
+
+[data-theme="shades-light"] .sidebar-logo,
+[data-theme="sage-dashboard"] .sidebar-logo {
+  filter: invert(1) brightness(0.2);
+}
+
+[data-theme="shades-dark"] .sidebar-logo {
+  filter: invert(0);
+}

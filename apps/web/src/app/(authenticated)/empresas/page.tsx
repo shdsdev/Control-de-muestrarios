@@ -31,6 +31,7 @@ import {
     MessageCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ImageWithFallback } from '@/components/ui/image-with-fallback';
 
 type Empresa = {
     id: string;
@@ -85,15 +86,6 @@ export default function EmpresasPage() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [sacFilter, setSacFilter] = useState<string>('TODOS');
-    const [brokenLogos, setBrokenLogos] = useState<Set<string>>(new Set());
-
-    const handleLogoError = (url: string) => {
-        setBrokenLogos(prev => {
-            const next = new Set(prev);
-            next.add(url);
-            return next;
-        });
-    };
 
 
     // Modal states
@@ -491,17 +483,13 @@ export default function EmpresasPage() {
                             >
                                 {/* Logo */}
                                 <div className="aspect-square w-full bg-zinc-950/80 flex items-center justify-center p-4 relative overflow-hidden">
-                                    {empresa.logo_url && !brokenLogos.has(empresa.logo_url) ? (
-                                        <img
-                                            src={empresa.logo_url}
-                                            alt={empresa.nombre}
-                                            className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
-                                            loading="lazy"
-                                            onError={() => handleLogoError(empresa.logo_url!)}
-                                        />
-                                    ) : (
-                                        <Building2 size={40} className="text-zinc-800 group-hover:text-zinc-700 transition-colors" />
-                                    )}
+                                    <ImageWithFallback
+                                        src={empresa.logo_url}
+                                        alt={empresa.nombre}
+                                        fallbackIcon={Building2}
+                                        className="transition-transform duration-500 group-hover:scale-110"
+                                        iconClassName="text-zinc-800 group-hover:text-zinc-700 transition-colors"
+                                    />
 
                                     {subs > 0 && (
                                         <div className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 bg-violet-500/20 border border-violet-500/30 rounded-md backdrop-blur-sm">
@@ -558,16 +546,13 @@ export default function EmpresasPage() {
                                     <div className="md:col-span-7 p-6 overflow-y-auto custom-scrollbar border-r border-white/[0.03] space-y-6">
                                         <div className="flex items-start gap-5">
                                             <div className="w-24 h-24 rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center overflow-hidden shrink-0 shadow-2xl">
-                                                {selectedEmpresa.logo_url && !brokenLogos.has(selectedEmpresa.logo_url) ? (
-                                                    <img
-                                                        src={selectedEmpresa.logo_url}
-                                                        className="w-full h-full object-contain p-2"
-                                                        alt=""
-                                                        onError={() => handleLogoError(selectedEmpresa.logo_url!)}
-                                                    />
-                                                ) : (
-                                                    <Building2 size={36} className="text-zinc-700" />
-                                                )}
+                                                <ImageWithFallback
+                                                    src={selectedEmpresa.logo_url}
+                                                    alt={selectedEmpresa.nombre}
+                                                    fallbackIcon={Building2}
+                                                    className="p-2"
+                                                    iconClassName="text-zinc-700"
+                                                />
                                             </div>
 
                                             <div className="flex-1 space-y-3">
@@ -608,16 +593,13 @@ export default function EmpresasPage() {
                                                         <div key={sub.id} onClick={() => handleOpenDetail(sub)}
                                                             className="bg-surface-2/50 rounded-xl border border-border p-3 flex items-center gap-3 cursor-pointer hover:border-accent/30 transition-all group">
                                                             <div className="w-10 h-10 rounded-lg bg-surface-2 border border-border flex items-center justify-center overflow-hidden shrink-0">
-                                                                {sub.logo_url && !brokenLogos.has(sub.logo_url) ? (
-                                                                    <img
-                                                                        src={sub.logo_url}
-                                                                        className="w-full h-full object-contain p-1"
-                                                                        alt=""
-                                                                        onError={() => handleLogoError(sub.logo_url!)}
-                                                                    />
-                                                                ) : (
-                                                                    <Building2 size={14} className="text-text-muted" />
-                                                                )}
+                                                                <ImageWithFallback
+                                                                    src={sub.logo_url}
+                                                                    alt={sub.nombre}
+                                                                    fallbackIcon={Building2}
+                                                                    className="p-1"
+                                                                    iconClassName="text-text-muted"
+                                                                />
                                                             </div>
 
                                                             <span className="text-[11px] text-text-muted font-semibold truncate group-hover:text-foreground transition-colors">{sub.nombre}</span>
@@ -764,13 +746,12 @@ export default function EmpresasPage() {
                                                     <div key={item.id} className="group relative rounded-2xl bg-white/[0.02] border border-white/[0.04] p-3 hover:bg-white/[0.04] hover:border-white/[0.08] transition-all duration-300">
                                                         <div className="flex items-center gap-4">
                                                             <div className="w-14 h-14 rounded-xl bg-zinc-950 border border-white/5 flex items-center justify-center overflow-hidden shrink-0 shadow-lg">
-                                                                {item.imagen_propuesta_url ? (
-                                                                    <img src={item.imagen_propuesta_url} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" alt="" />
-                                                                ) : item.muestrarios_tipos?.imagen_url ? (
-                                                                    <img src={item.muestrarios_tipos.imagen_url} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" alt="" />
-                                                                ) : (
-                                                                    <Package size={24} className="text-zinc-800" />
-                                                                )}
+                                                                <ImageWithFallback
+                                                                    src={item.imagen_propuesta_url || item.muestrarios_tipos?.imagen_url}
+                                                                    alt={item.muestrarios_tipos?.nombre}
+                                                                    fallbackIcon={Package}
+                                                                    iconClassName="text-zinc-800"
+                                                                />
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <div className="flex items-center justify-between mb-1">

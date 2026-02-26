@@ -17,10 +17,13 @@ import {
     Upload,
     ArrowRight,
     Loader2,
-    CheckCircle2
+    CheckCircle2,
+    Plus,
+    ExternalLink
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getMuestrariosCreadosByEmpresa, type MuestrarioCreado } from '@/lib/data/empresas';
+import { ImageWithFallback } from '@/components/ui/image-with-fallback';
 
 interface WizardSolicitudProps {
     isOpen: boolean;
@@ -51,12 +54,20 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
         categoria_id: '',
         producto_id: '',
         modelo_id: '',
+        proyecto_nombre: '', // For design folders
         logo_url: '',
         colores: [] as string[],
         cantidad: 1,
         fast_track: false,
         notas: ''
     });
+
+    const [logoFile, setLogoFile] = useState<File | null>(null);
+    const [isCreatingEmpresa, setIsCreatingEmpresa] = useState(false);
+    const [newEmpresaData, setNewEmpresaData] = useState({ nombre: '', region_id: '' });
+    const [regiones, setRegiones] = useState<any[]>([]);
+    const [driveLoading, setDriveLoading] = useState(false);
+    const [successData, setSuccessData] = useState<{ url: string, codigo: string } | null>(null);
 
     // Data lists
     const [empresas, setEmpresas] = useState<any[]>([]);
@@ -79,14 +90,39 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
     // Search & View Mode for Empresa
     const [empresaSearch, setEmpresaSearch] = useState('');
     const [empresaViewMode, setEmpresaViewMode] = useState<'grid' | 'list'>('list');
-    const [brokenLogos, setBrokenLogos] = useState<Set<string>>(new Set());
+    const [isSearchingEmpresas, setIsSearchingEmpresas] = useState(false);
+    const [empresaPage, setEmpresaPage] = useState(1);
+    const [hasMoreEmpresas, setHasMoreEmpresas] = useState(true);
+    const EMPRESAS_PER_PAGE = 30;
 
-    const handleLogoError = (url: string) => {
-        setBrokenLogos(prev => {
-            const next = new Set(prev);
-            next.add(url);
-            return next;
-        });
+
+    const handleCreateEmpresa = async () => {
+        if (!newEmpresaData.nombre) return showToast('El nombre es obligatorio', 'error');
+        setLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('empresas')
+                .insert({
+                    nombre: newEmpresaData.nombre,
+                    region_id: newEmpresaData.region_id || null
+                })
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            showToast('Empresa creada exitosamente');
+            setEmpresas(prev => [...prev, data].sort((a, b) => a.nombre.localeCompare(b.nombre)));
+            setFormData(prev => ({ ...prev, empresa_id: data.id }));
+            setIsCreatingEmpresa(false);
+            setNewEmpresaData({ nombre: '', region_id: '' });
+            setCurrentStep(3); // Auto-advance to next step
+        } catch (error: any) {
+            console.error('Error creating empresa:', error);
+            showToast('Error al crear empresa: ' + error.message, 'error');
+        } finally {
+            setLoading(false);
+        }
     };
 
 
@@ -153,6 +189,7 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
             categoria_id: '',
             producto_id: '',
             modelo_id: '',
+            proyecto_nombre: '',
             logo_url: '',
             colores: [],
             cantidad: 1,
@@ -177,7 +214,7 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
             console.log('[Wizard] rol:', detectedRole, '| privileged:', isPrivilegedRole(detectedRole));
 
             setUserProfile(profile);
-            setFormData(prev => ({ ...prev, solicitante_id: profile.id }));
+            setFormData(prev => ({ ...prev, solicitante_id: profile.id, proyecto_nombre: '' }));
 
             if (isPrivilegedRole(detectedRole)) {
                 setIsAdmin(true);
@@ -197,12 +234,68 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
 
         }
 
-        const { data: empresasData } = await supabase.from('empresas').select('*').order('nombre');
-        setEmpresas(empresasData || []);
+        const { data: regionesData } = await supabase.from('regiones').select('*').order('nombre');
+        setRegiones(regionesData || []);
 
         const { data: tiposData } = await supabase.from('muestrarios_tipos').select('*').order('nombre');
         setTiposMuestrario(tiposData || []);
+
+        // Initial fetch of companies (top 50)
+        await searchEmpresas('');
     };
+
+    const searchEmpresas = async (term: string, page: number = 1) => {
+        setIsSearchingEmpresas(true);
+        try {
+            const start = (page - 1) * EMPRESAS_PER_PAGE;
+            const end = start + EMPRESAS_PER_PAGE - 1;
+
+            let query = supabase.from('empresas').select('*', { count: 'exact' });
+
+            if (term) {
+                query = query.ilike('nombre', `%${term}%`);
+            } else {
+                query = query.is('marca_padre_id', null);
+            }
+
+            const { data, count } = await query
+                .order('nombre')
+                .range(start, end);
+
+            const newEmpresas = data || [];
+            if (page === 1) {
+                setEmpresas(newEmpresas);
+            } else {
+                setEmpresas(prev => {
+                    // Filter out duplicates just in case
+                    const existingIds = new Set(prev.map(e => e.id));
+                    return [...prev, ...newEmpresas.filter(e => !existingIds.has(e.id))];
+                });
+            }
+
+            setHasMoreEmpresas(count ? (start + newEmpresas.length < count) : false);
+            setEmpresaPage(page);
+        } catch (error) {
+            console.error('Error searching empresas:', error);
+        } finally {
+            setIsSearchingEmpresas(false);
+        }
+    };
+
+    const handleLoadMoreEmpresas = () => {
+        if (!isSearchingEmpresas && hasMoreEmpresas) {
+            searchEmpresas(empresaSearch, empresaPage + 1);
+        }
+    };
+
+    // Debounced search for empresas
+    useEffect(() => {
+        if (!isOpen) return;
+        const timer = setTimeout(() => {
+            searchEmpresas(empresaSearch);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [empresaSearch, isOpen]);
 
     const handleSubmit = async () => {
         // Pre-submission validation
@@ -270,11 +363,51 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
                 throw new Error(`Error en tabla items: ${itemError.message || 'Error desconocido'}`);
             }
 
-            showToast('¡Solicitud creada exitosamente!', 'success');
-            setTimeout(() => {
-                onSuccess();
-                onClose();
-            }, 1500);
+            // 3. IF Design Proposal -> Call Drive Factory
+            if (formData.tipo_solicitud === 'diseno') {
+                setDriveLoading(true);
+                try {
+                    const empresaNombre = empresas.find(e => e.id === formData.empresa_id)?.nombre || 'CLIENTE';
+                    const tipoProducto = tiposMuestrario.find(t => t.id === formData.producto_id)?.nombre || 'GENERAL';
+
+                    const body = new FormData();
+                    body.append('solicitudId', newSolicitud.id);
+                    body.append('empresaId', formData.empresa_id);
+                    body.append('empresaNombre', empresaNombre);
+                    body.append('codigo', newSolicitud.codigo);
+                    body.append('clienteNombre', empresaNombre); // Keep for compatibility if needed elsewhere
+                    body.append('tipoProducto', tipoProducto);
+
+                    if (logoFile) body.append('logoFile', logoFile);
+
+                    const driveRes = await fetch('/api/drive/setup', {
+                        method: 'POST',
+                        body: body
+                    });
+
+                    const driveData = await driveRes.json();
+
+                    if (driveData.success) {
+                        setSuccessData({
+                            url: driveData.folderUrl,
+                            codigo: newSolicitud.codigo
+                        });
+                    } else {
+                        console.warn('Drive setup returned fail:', driveData);
+                        showToast('Advertencia: Carpeta de Drive no creada automáticamente.', 'error');
+                    }
+                } catch (driveErr) {
+                    console.error('Drive Setup Catch:', driveErr);
+                } finally {
+                    setDriveLoading(false);
+                }
+            } else {
+                // Fabricacion success
+                setSuccessData({ url: '', codigo: newSolicitud.codigo });
+            }
+
+            // showToast('¡Solicitud creada exitosamente!', 'success');
+            // Success step handled by successData presence
 
         } catch (err: any) {
             console.error('Final Error Catch:', err);
@@ -286,15 +419,21 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
     };
 
     const nextStep = () => {
+        if (currentStep === 2 && !formData.empresa_id) return showToast('Error: Debes seleccionar o crear una empresa', 'error');
+
         if (currentStep === 3) {
             if (formData.tipo_solicitud === 'fabricacion') setCurrentStep(4);
             else setCurrentStep(6);
         } else if (currentStep === 5 && formData.tipo_solicitud === 'fabricacion') {
             setCurrentStep(8);
+        } else if (currentStep === 6 && formData.tipo_solicitud === 'diseno') {
+            setCurrentStep(7);
         } else if (currentStep === 7 && formData.tipo_solicitud === 'diseno') {
+            if (!logoFile) return showToast('Error: El logo es obligatorio para propuestas de diseño', 'error');
+            if (formData.colores.length === 0) return showToast('Error: Selecciona al menos 1 color para el branding', 'error');
             setCurrentStep(8);
-        } else if (currentStep === 9) {
-            handleSubmit();
+        } else if (currentStep === 8) {
+            setCurrentStep(9);
         } else {
             setCurrentStep((prev) => (prev + 1) as Step);
         }
@@ -406,15 +545,31 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
 
                             {/* Sticky Search Bar */}
                             <div className="sticky top-0 z-10 bg-surface/80 backdrop-blur-xl p-4 rounded-3xl border border-border flex flex-col md:flex-row gap-4 items-center justify-between max-w-4xl mx-auto w-full shadow-2xl shrink-0">
-                                <div className="relative flex-1 w-full">
-                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
-                                    <input
-                                        type="text"
-                                        placeholder="Buscar empresa o sub-marca..."
-                                        value={empresaSearch}
-                                        onChange={(e) => setEmpresaSearch(e.target.value)}
-                                        className="w-full bg-surface-2 border border-border rounded-2xl py-3 pl-12 pr-4 text-xs focus:ring-1 focus:ring-accent focus:outline-none transition-all text-foreground placeholder:text-text-muted/50 shadow-inner"
-                                    />
+                                <div className="relative flex-1 w-full flex gap-3">
+                                    <div className="relative flex-1">
+                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
+                                        <input
+                                            type="text"
+                                            placeholder="Buscar empresa o sub-marca..."
+                                            value={empresaSearch}
+                                            onChange={(e) => setEmpresaSearch(e.target.value)}
+                                            className="w-full bg-surface-2 border border-border rounded-2xl py-3 pl-12 pr-4 text-xs focus:ring-1 focus:ring-accent focus:outline-none transition-all text-foreground placeholder:text-text-muted/50 shadow-inner"
+                                        />
+                                    </div>
+                                    {isSearchingEmpresas && (
+                                        <div className="absolute right-16 top-1/2 -translate-y-1/2">
+                                            <Loader2 className="animate-spin text-accent" size={16} />
+                                        </div>
+                                    )}
+                                    <button
+                                        onClick={() => setIsCreatingEmpresa(!isCreatingEmpresa)}
+                                        className={cn(
+                                            "px-4 rounded-2xl border transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest",
+                                            isCreatingEmpresa ? "bg-danger/10 border-danger text-danger" : "bg-accent/10 border-accent text-accent hover:bg-accent hover:text-white"
+                                        )}
+                                    >
+                                        {isCreatingEmpresa ? <X size={16} /> : <><Plus size={16} /> Nueva</>}
+                                    </button>
                                 </div>
                                 <div className="flex bg-surface-2 p-1 rounded-xl border border-border shrink-0">
                                     <button
@@ -435,12 +590,50 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
                             </div>
 
                             <div className="flex-1 overflow-y-auto custom-scrollbar px-2 pb-8 overscroll-contain">
-                                {empresaViewMode === 'grid' ? (
+                                {isCreatingEmpresa ? (
+                                    <div className="max-w-xl mx-auto p-8 bg-surface-2/40 border border-border rounded-[2.5rem] animate-in fade-in slide-in-from-top-4 duration-500 space-y-8">
+                                        <div className="text-center space-y-2">
+                                            <h4 className="text-xl font-bold text-foreground uppercase tracking-tight">Nueva Empresa</h4>
+                                            <p className="text-[10px] text-text-muted uppercase tracking-[0.2em]">Registro rápido de marca</p>
+                                        </div>
+                                        <div className="space-y-6">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Nombre Comercial</label>
+                                                <input
+                                                    type="text"
+                                                    value={newEmpresaData.nombre}
+                                                    onChange={(e) => setNewEmpresaData(prev => ({ ...prev, nombre: e.target.value }))}
+                                                    className="w-full bg-surface-2 border border-border rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-accent focus:outline-none transition-all"
+                                                    placeholder="Ej. Shades Luxury"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Región de Operación</label>
+                                                <select
+                                                    value={newEmpresaData.region_id}
+                                                    onChange={(e) => setNewEmpresaData(prev => ({ ...prev, region_id: e.target.value }))}
+                                                    className="w-full bg-surface-2 border border-border rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-accent focus:outline-none transition-all appearance-none cursor-pointer"
+                                                >
+                                                    <option value="">Seleccionar región...</option>
+                                                    {regiones.map(r => (
+                                                        <option key={r.id} value={r.id}>{r.nombre}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <button
+                                                onClick={handleCreateEmpresa}
+                                                disabled={loading}
+                                                className="w-full bg-accent text-text-inverse font-black py-5 rounded-2xl flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-lg text-[10px] uppercase tracking-[0.2em]"
+                                            >
+                                                {loading ? <Loader2 className="animate-spin" size={20} /> : <><Check size={20} /> Guardar Marca</>}
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : empresaViewMode === 'grid' ? (
                                     <div className="space-y-8">
                                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                                             {empresas
-                                                .filter(e => !e.marca_padre_id && (e.nombre.toLowerCase().includes(empresaSearch.toLowerCase()) || (empresas.some(sub => sub.marca_padre_id === e.id && sub.nombre.toLowerCase().includes(empresaSearch.toLowerCase())))))
-                                                .slice(0, empresaSearch ? 20 : 50)
+                                                .filter(e => !e.marca_padre_id)
                                                 .map(empresa => (
                                                     <div
                                                         key={empresa.id}
@@ -451,21 +644,48 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
                                                         )}
                                                     >
                                                         <div className="w-16 h-16 rounded-2xl bg-surface-2 border border-border flex items-center justify-center overflow-hidden shrink-0 shadow-lg group-hover:scale-105 transition-transform">
-                                                            {(empresaSearch && empresa.logo_url && !brokenLogos.has(empresa.logo_url)) ? (
-                                                                <img
-                                                                    src={empresa.logo_url}
-                                                                    className="w-full h-full object-contain p-2"
-                                                                    alt=""
-                                                                    onError={() => handleLogoError(empresa.logo_url!)}
-                                                                />
-                                                            ) : (
-                                                                <Building2 className="text-text-muted opacity-50" size={24} />
-                                                            )}
+                                                            <ImageWithFallback
+                                                                src={empresa.logo_url}
+                                                                alt={empresa.nombre}
+                                                                fallbackIcon={Building2}
+                                                                className="p-2"
+                                                                iconClassName="text-text-muted opacity-50"
+                                                            />
                                                         </div>
                                                         <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest text-center group-hover:text-foreground transition-colors">{empresa.nombre}</span>
                                                     </div>
                                                 ))}
                                         </div>
+
+                                        {empresas.filter(e => !e.marca_padre_id).length === 0 && !isSearchingEmpresas && (
+                                            <div className="flex flex-col items-center justify-center py-12 px-4 space-y-4 bg-surface-2/20 border border-dashed border-border rounded-[2rem] animate-in fade-in zoom-in-95 duration-500 max-w-xl mx-auto">
+                                                <div className="w-16 h-16 rounded-full bg-surface-2 flex items-center justify-center border border-border">
+                                                    <Building2 className="text-text-muted/40" size={32} />
+                                                </div>
+                                                <div className="text-center space-y-1">
+                                                    <p className="text-sm font-bold text-foreground uppercase tracking-tight">No se encontró la empresa</p>
+                                                    <p className="text-[10px] text-text-muted uppercase tracking-widest">¿Deseas registrarla rápidamente?</p>
+                                                </div>
+                                                <button
+                                                    onClick={() => setIsCreatingEmpresa(true)}
+                                                    className="px-8 py-3 bg-accent text-text-inverse rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_var(--glow)]"
+                                                >
+                                                    Crear Marca Ahora
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {hasMoreEmpresas && (
+                                            <div className="flex justify-center pt-4">
+                                                <button
+                                                    onClick={handleLoadMoreEmpresas}
+                                                    disabled={isSearchingEmpresas}
+                                                    className="px-6 py-2.5 rounded-xl border border-border bg-surface-2/40 text-[10px] font-black uppercase tracking-widest text-text-muted hover:text-foreground hover:border-accent/50 transition-all disabled:opacity-50"
+                                                >
+                                                    {isSearchingEmpresas ? <Loader2 className="animate-spin" size={14} /> : 'Cargar más empresas'}
+                                                </button>
+                                            </div>
+                                        )}
 
                                         {subEmpresas.length > 0 && (
                                             <div className="pt-8 border-t border-border space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -483,16 +703,13 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
                                                                 )}
                                                             >
                                                                 <div className="w-12 h-12 rounded-xl bg-surface-2 border border-border flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-105 transition-transform">
-                                                                    {(empresaSearch && sub.logo_url && !brokenLogos.has(sub.logo_url)) ? (
-                                                                        <img
-                                                                            src={sub.logo_url}
-                                                                            className="w-full h-full object-contain p-1"
-                                                                            alt=""
-                                                                            onError={() => handleLogoError(sub.logo_url!)}
-                                                                        />
-                                                                    ) : (
-                                                                        <Building2 className="text-text-muted opacity-50" size={20} />
-                                                                    )}
+                                                                    <ImageWithFallback
+                                                                        src={sub.logo_url}
+                                                                        alt={sub.nombre}
+                                                                        fallbackIcon={Building2}
+                                                                        className="p-1"
+                                                                        iconClassName="text-text-muted opacity-50"
+                                                                    />
                                                                 </div>
                                                                 <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest text-center group-hover:text-foreground transition-colors">{sub.nombre}</span>
                                                             </div>
@@ -505,8 +722,7 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
                                     <div className="max-w-4xl mx-auto bg-white/[0.02] border border-white/5 rounded-[2rem] overflow-hidden">
                                         <div className="divide-y divide-white/5">
                                             {empresas
-                                                .filter(e => !e.marca_padre_id && (e.nombre.toLowerCase().includes(empresaSearch.toLowerCase()) || (empresas.some(sub => sub.marca_padre_id === e.id && sub.nombre.toLowerCase().includes(empresaSearch.toLowerCase())))))
-                                                .slice(0, empresaSearch ? 20 : 50)
+                                                .filter(e => !e.marca_padre_id)
                                                 .map(empresa => (
                                                     <div key={empresa.id} className="group">
                                                         <div
@@ -518,23 +734,20 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
                                                         >
                                                             <div className={cn("w-2 h-2 rounded-full", formData.empresa_id === empresa.id ? "bg-primary shadow-[0_0_8px_rgba(212,255,112,0.5)]" : "bg-zinc-800")} />
                                                             <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center overflow-hidden shrink-0">
-                                                                {(empresaSearch && empresa.logo_url && !brokenLogos.has(empresa.logo_url)) ? (
-                                                                    <img
-                                                                        src={empresa.logo_url}
-                                                                        className="w-full h-full object-contain p-1"
-                                                                        alt=""
-                                                                        onError={() => handleLogoError(empresa.logo_url!)}
-                                                                    />
-                                                                ) : (
-                                                                    <Building2 className="text-zinc-800" size={16} />
-                                                                )}
+                                                                <ImageWithFallback
+                                                                    src={empresa.logo_url}
+                                                                    alt={empresa.nombre}
+                                                                    fallbackIcon={Building2}
+                                                                    className="p-1"
+                                                                    iconClassName="text-zinc-800"
+                                                                />
                                                             </div>
                                                             <span className={cn("text-xs font-bold uppercase tracking-widest", formData.empresa_id === empresa.id ? "text-primary" : "text-white")}>{empresa.nombre}</span>
                                                         </div>
 
                                                         {/* Nested Sub-brands */}
                                                         {empresas
-                                                            .filter(sub => sub.marca_padre_id === empresa.id && (empresaSearch === '' || sub.nombre.toLowerCase().includes(empresaSearch.toLowerCase())))
+                                                            .filter(sub => sub.marca_padre_id === empresa.id)
                                                             .map(sub => (
                                                                 <div
                                                                     key={sub.id}
@@ -546,16 +759,13 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
                                                                 >
                                                                     <div className={cn("w-1.5 h-1.5 rounded-full", formData.empresa_id === sub.id ? "bg-violet-400 shadow-[0_0_8px_rgba(168,85,247,0.5)]" : "bg-zinc-800")} />
                                                                     <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center overflow-hidden shrink-0">
-                                                                        {(empresaSearch && sub.logo_url && !brokenLogos.has(sub.logo_url)) ? (
-                                                                            <img
-                                                                                src={sub.logo_url}
-                                                                                className="w-full h-full object-contain p-1"
-                                                                                alt=""
-                                                                                onError={() => handleLogoError(sub.logo_url!)}
-                                                                            />
-                                                                        ) : (
-                                                                            <Building2 className="text-zinc-800" size={14} />
-                                                                        )}
+                                                                        <ImageWithFallback
+                                                                            src={sub.logo_url}
+                                                                            alt={sub.nombre}
+                                                                            fallbackIcon={Building2}
+                                                                            className="p-1"
+                                                                            iconClassName="text-zinc-800"
+                                                                        />
                                                                     </div>
                                                                     <span className={cn("text-[10px] font-semibold uppercase tracking-widest", formData.empresa_id === sub.id ? "text-violet-400" : "text-zinc-400")}>{sub.nombre}</span>
                                                                     <span className="text-[8px] text-zinc-600 font-black uppercase ml-auto">Sub-marca</span>
@@ -564,6 +774,30 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
                                                     </div>
                                                 ))}
                                         </div>
+
+                                        {hasMoreEmpresas && (
+                                            <div className="p-4 border-t border-white/5 flex justify-center">
+                                                <button
+                                                    onClick={handleLoadMoreEmpresas}
+                                                    disabled={isSearchingEmpresas}
+                                                    className="px-6 py-2.5 rounded-xl border border-white/5 bg-white/[0.02] text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white hover:border-white/10 transition-all disabled:opacity-50"
+                                                >
+                                                    {isSearchingEmpresas ? <Loader2 className="animate-spin" size={14} /> : 'Cargar más empresas'}
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {hasMoreEmpresas && (
+                                            <div className="p-4 border-t border-white/5 flex justify-center">
+                                                <button
+                                                    onClick={handleLoadMoreEmpresas}
+                                                    disabled={isSearchingEmpresas}
+                                                    className="px-6 py-2.5 rounded-xl border border-white/5 bg-white/[0.02] text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white hover:border-white/10 transition-all disabled:opacity-50"
+                                                >
+                                                    {isSearchingEmpresas ? <Loader2 className="animate-spin" size={14} /> : 'Cargar más empresas'}
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -722,24 +956,12 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
                                                 )}
                                             >
                                                 <div className="aspect-square rounded-2xl bg-surface-2 border border-border overflow-hidden relative">
-                                                    {/* Prioritize custom proposal image over template image */}
-                                                    {(item.imagen_propuesta_url || item.muestrarios_tipos?.imagen_url) && !brokenLogos.has(item.imagen_propuesta_url || item.muestrarios_tipos?.imagen_url || '') ? (
-                                                        <img
-                                                            src={item.imagen_propuesta_url || item.muestrarios_tipos?.imagen_url || ''}
-                                                            className="w-full h-full object-cover"
-                                                            alt=""
-                                                            loading="lazy"
-                                                            onError={() => {
-                                                                const url = item.imagen_propuesta_url || item.muestrarios_tipos?.imagen_url;
-                                                                if (url && process.env.NODE_ENV === 'development') {
-                                                                    console.warn('[Wizard] imagen failed:', url);
-                                                                }
-                                                                if (url) handleLogoError(url);
-                                                            }}
-                                                        />
-                                                    ) : (
-                                                        <div className="w-full h-full flex items-center justify-center"><Package className="text-text-muted/20" size={40} /></div>
-                                                    )}
+                                                    <ImageWithFallback
+                                                        src={item.imagen_propuesta_url || item.muestrarios_tipos?.imagen_url}
+                                                        alt={item.muestrarios_tipos?.nombre}
+                                                        fallbackIcon={Package}
+                                                        iconClassName="text-text-muted/20"
+                                                    />
                                                 </div>
                                                 <div className="space-y-1">
                                                     <p className="text-sm font-bold text-foreground uppercase tracking-tight">{item.muestrarios_tipos?.nombre}</p>
@@ -786,65 +1008,131 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
 
                     {/* Step 7 Design Model/Logo/Colors */}
                     {currentStep === 7 && formData.tipo_solicitud === 'diseno' && (
-                        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8">
                             <div className="text-center space-y-2">
                                 <h3 className="text-2xl font-bold text-foreground uppercase tracking-tight">Personalización de Marca</h3>
-                                <p className="text-xs text-text-muted uppercase tracking-widest">Activos y Estética de la Propuesta</p>
+                                <p className="text-xs text-text-muted uppercase tracking-widest leading-loose">Activos y Estética de la Propuesta</p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                                 {/* Logo Group */}
                                 <div className="space-y-6">
-                                    <h4 className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em]">Gestión de Branding</h4>
+                                    <h4 className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em]">Logo de la Marca (Obligatorio)</h4>
                                     <div className="space-y-4">
-                                        <div className="p-6 rounded-3xl bg-surface-2/40 border border-border flex items-center gap-4 group hover:border-accent/30 transition-all cursor-pointer">
-                                            <div className="w-12 h-12 rounded-xl bg-surface-2 border border-border flex items-center justify-center shrink-0">
-                                                <Building2 className="text-text-muted" size={20} />
+                                        <label className={cn(
+                                            "relative p-8 rounded-[2rem] border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center gap-4 group",
+                                            logoFile ? "bg-accent/5 border-accent/40" : "bg-surface-2/40 border-border hover:border-accent/40"
+                                        )}>
+                                            <input
+                                                type="file"
+                                                className="hidden"
+                                                accept=".pdf,.svg,.png,.jpg,.jpeg"
+                                                onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
+                                            />
+                                            <div className={cn(
+                                                "w-16 h-16 rounded-3xl flex items-center justify-center transition-all",
+                                                logoFile ? "bg-accent text-white shadow-[0_0_20px_var(--glow)]" : "bg-surface-2 text-text-muted group-hover:bg-accent/10 group-hover:text-accent"
+                                            )}>
+                                                {logoFile ? <Check size={32} /> : <Upload size={32} />}
                                             </div>
-                                            <div className="flex-1">
-                                                <p className="text-xs font-bold text-foreground">Logo Actual de Empresa</p>
-                                                <p className="text-[9px] text-text-muted mt-1">Usar archivo predeterminado</p>
+                                            <div className="text-center">
+                                                <p className="text-xs font-bold text-foreground truncate max-w-[200px]">
+                                                    {logoFile ? logoFile.name : 'Seleccionar Archivo'}
+                                                </p>
+                                                <p className="text-[10px] text-text-muted mt-1 uppercase tracking-widest">
+                                                    PDF, SVG, PNG o JPG (Max 10MB)
+                                                </p>
                                             </div>
-                                            <div className="w-5 h-5 rounded-full border border-border flex items-center justify-center"><Check className="text-accent hidden group-hover:block" size={12} /></div>
-                                        </div>
-                                        <div className="p-6 rounded-3xl bg-surface-2/40 border border-dashed border-border flex items-center gap-4 hover:border-accent/50 transition-all cursor-pointer">
-                                            <div className="w-12 h-12 rounded-xl bg-surface-2 border border-border flex items-center justify-center shrink-0">
-                                                <Upload className="text-text-muted" size={20} />
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className="text-xs font-bold text-foreground">Subir Nuevo Activo</p>
-                                                <p className="text-[9px] text-text-muted mt-1">Soporte SVG, PNG (Max 5MB)</p>
-                                            </div>
+                                            {logoFile && (
+                                                <button
+                                                    onClick={(e) => { e.preventDefault(); setLogoFile(null); }}
+                                                    className="absolute top-4 right-4 p-2 bg-danger/10 text-danger rounded-xl hover:bg-danger hover:text-white transition-all"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            )}
+                                        </label>
+
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Nombre del Proyecto / Propuesta</label>
+                                            <input
+                                                type="text"
+                                                value={formData.proyecto_nombre}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, proyecto_nombre: e.target.value }))}
+                                                className="w-full bg-surface-2 border border-border rounded-2xl py-4 px-6 text-sm focus:ring-1 focus:ring-accent focus:outline-none transition-all placeholder:text-text-muted/30"
+                                                placeholder="Ej. Colección Verano 2025"
+                                            />
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Colors Group */}
                                 <div className="space-y-6">
-                                    <h4 className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em]">Paleta de Colores (Max 3)</h4>
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em]">Paleta de Colores (1-3)</h4>
+                                        <span className="text-[10px] font-bold text-accent uppercase tracking-widest">{formData.colores.length}/3</span>
+                                    </div>
                                     <div className="grid grid-cols-4 gap-3">
-                                        {['#000000', '#ffffff', '#FF5733', '#33FF57', '#3357FF', '#F333FF', '#33FFF3', '#F3FF33'].map(color => (
-                                            <div
-                                                key={color}
-                                                onClick={() => {
-                                                    setFormData(prev => ({
-                                                        ...prev,
-                                                        colores: prev.colores.includes(color)
-                                                            ? prev.colores.filter(c => c !== color)
-                                                            : prev.colores.length < 3 ? [...prev.colores, color] : prev.colores
-                                                    }))
-                                                }}
-                                                className={cn(
-                                                    "aspect-square rounded-2xl border transition-all cursor-pointer relative",
-                                                    formData.colores.includes(color) ? "border-accent scale-110 shadow-[0_0_15px_var(--glow)]" : "border-border"
-                                                )}
-                                                style={{ backgroundColor: color }}
-                                            >
-                                                {formData.colores.includes(color) && (
-                                                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-2xl text-white">
-                                                        <Check size={16} />
+                                        {[
+                                            { hex: '#000000' },
+                                            { hex: '#FFFFFF' },
+                                            { hex: '#4B5563' },
+                                            { hex: '#1D4ED8' },
+                                            { hex: '#B45309' },
+                                            { hex: '#991B1B' },
+                                            { hex: '#065F46' },
+                                            { hex: 'CUSTOM' }
+                                        ].map((item, idx) => {
+                                            if (item.hex === 'CUSTOM') {
+                                                return (
+                                                    <div key="custom" className="relative group aspect-square rounded-2xl border border-border bg-surface-2/40 flex items-center justify-center cursor-pointer hover:border-accent/40 transition-all overflow-hidden">
+                                                        <Plus size={20} className="text-text-muted group-hover:text-accent" />
+                                                        <input
+                                                            type="color"
+                                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                                            onChange={(e) => {
+                                                                const color = e.target.value;
+                                                                if (!formData.colores.includes(color) && formData.colores.length < 3) {
+                                                                    setFormData(prev => ({ ...prev, colores: [...prev.colores, color] }));
+                                                                }
+                                                            }}
+                                                        />
                                                     </div>
-                                                )}
+                                                );
+                                            }
+                                            return (
+                                                <div
+                                                    key={idx}
+                                                    onClick={() => {
+                                                        setFormData(prev => ({
+                                                            ...prev,
+                                                            colores: prev.colores.includes(item.hex)
+                                                                ? prev.colores.filter(c => c !== item.hex)
+                                                                : prev.colores.length < 3 ? [...prev.colores, item.hex] : prev.colores
+                                                        }))
+                                                    }}
+                                                    className={cn(
+                                                        "aspect-square rounded-2xl border transition-all cursor-pointer relative flex items-center justify-center group",
+                                                        formData.colores.includes(item.hex) ? "border-accent scale-105 shadow-[0_0_15px_var(--glow)]" : "border-border hover:border-accent/30"
+                                                    )}
+                                                    style={{ backgroundColor: item.hex }}
+                                                >
+                                                    {formData.colores.includes(item.hex) && (
+                                                        <div className="bg-black/10 w-full h-full rounded-2xl flex items-center justify-center">
+                                                            <Check size={16} className={cn(item.hex === '#FFFFFF' ? "text-black" : "text-white")} />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    <div className="flex gap-2 flex-wrap min-h-[40px] p-4 bg-surface-2/20 border border-border rounded-2xl">
+                                        {formData.colores.length === 0 && <p className="text-[10px] text-text-muted/40 uppercase tracking-widest flex items-center h-full">Selecciona colores para el branding...</p>}
+                                        {formData.colores.map(c => (
+                                            <div key={c} className="px-3 py-1.5 rounded-full bg-accent/20 border border-accent/30 text-accent text-[9px] font-black uppercase tracking-widest flex items-center gap-2 animate-in zoom-in duration-300">
+                                                <div className="w-2.5 h-2.5 rounded-full border border-white/20" style={{ backgroundColor: c }} />
+                                                {c}
+                                                <X size={10} className="cursor-pointer hover:text-danger transition-colors" onClick={() => setFormData(prev => ({ ...prev, colores: prev.colores.filter(x => x !== c) }))} />
                                             </div>
                                         ))}
                                     </div>
@@ -927,8 +1215,8 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
                         </div>
                     )}
 
-                    {currentStep === 9 && (
-                        <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    {currentStep === 9 && !successData && (
+                        <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8">
                             <div className="text-center space-y-2">
                                 <h3 className="text-2xl font-bold text-foreground uppercase tracking-tight">Resumen de Solicitud</h3>
                                 <p className="text-xs text-text-muted uppercase tracking-widest leading-loose">Verifica los detalles antes de enviar</p>
@@ -999,28 +1287,76 @@ export default function WizardSolicitud({ isOpen, onClose, onSuccess, defaultEmp
                             </div>
                         </div>
                     )}
+
+                    {successData && (
+                        <div className="max-w-2xl mx-auto py-12 flex flex-col items-center text-center space-y-10 animate-in zoom-in-95 duration-700">
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full scale-150 animate-pulse" />
+                                <div className="relative w-32 h-32 bg-accent rounded-[2.5rem] flex items-center justify-center shadow-[0_0_50px_var(--glow)]">
+                                    <CheckCircle2 size={64} className="text-text-inverse" />
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h3 className="text-4xl font-bold text-foreground uppercase tracking-tight">¡Solicitud Enviada!</h3>
+                                <p className="text-xl font-bold text-accent tracking-[0.2em]">{successData.codigo}</p>
+                                <p className="text-sm text-text-muted max-w-sm mx-auto uppercase tracking-widest leading-loose">
+                                    Tu solicitud ha sido registrada correctamente y está en proceso de aprobación técnica.
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full pt-4">
+                                {successData.url && (
+                                    <a
+                                        href={successData.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="bg-white/5 border border-white/10 hover:bg-white/10 text-white font-black py-5 rounded-[2rem] flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-xl text-[10px] uppercase tracking-[0.2em]"
+                                    >
+                                        <ExternalLink size={18} /> Abrir Carpeta Drive
+                                    </a>
+                                )}
+                                <button
+                                    onClick={() => { onClose(); onSuccess(); }}
+                                    className="bg-accent text-text-inverse font-black py-5 rounded-[2rem] flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-[0_0_30px_var(--glow)] text-[10px] uppercase tracking-[0.2em]"
+                                >
+                                    Cerrar y Salir
+                                </button>
+                            </div>
+
+                            {driveLoading && (
+                                <p className="text-[10px] text-accent font-black uppercase tracking-[0.3em] flex items-center gap-2">
+                                    <Loader2 className="animate-spin" size={12} /> Sincronizando Activos...
+                                </p>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Footer Controls */}
-                <div className="p-8 border-t border-border bg-surface/50 flex items-center justify-between shrink-0">
-                    <button
-                        onClick={prevStep}
-                        disabled={currentStep === 1}
-                        className="px-8 py-4 rounded-2xl border border-border text-text-muted hover:text-foreground hover:bg-surface-2 transition-all text-xs font-black uppercase tracking-widest disabled:opacity-0 flex items-center gap-2"
-                    >
-                        <ChevronLeft size={16} /> Atrás
-                    </button>
-
-                    <div className="flex items-center gap-6">
-                        <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest hidden md:block">Progreso del Pedido: {Math.round((currentStep / 9) * 100)}%</p>
+                {!successData && (
+                    <div className="p-8 border-t border-border bg-surface/50 flex items-center justify-between shrink-0">
                         <button
-                            onClick={nextStep}
-                            className="bg-accent hover:bg-accent/90 text-text-inverse font-black px-10 py-4 rounded-2xl flex items-center gap-2 transition-all active:scale-95 shadow-[0_0_20px_var(--glow)] text-xs uppercase tracking-widest"
+                            onClick={prevStep}
+                            disabled={currentStep === 1}
+                            className="px-8 py-4 rounded-2xl border border-border text-text-muted hover:text-foreground hover:bg-surface-2 transition-all text-xs font-black uppercase tracking-widest disabled:opacity-0 flex items-center gap-2"
                         >
-                            {currentStep === 9 ? 'Confirmar Pedido' : 'Continuar'} <ChevronRight size={18} />
+                            <ChevronLeft size={16} /> Atrás
                         </button>
+
+                        <div className="flex items-center gap-6">
+                            <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest hidden md:block">Progreso del Pedido: {Math.round((currentStep / 9) * 100)}%</p>
+                            <button
+                                onClick={currentStep === 9 ? handleSubmit : nextStep}
+                                disabled={loading || driveLoading}
+                                className="bg-accent hover:bg-accent/90 text-text-inverse font-black px-10 py-4 rounded-2xl flex items-center gap-2 transition-all active:scale-95 shadow-[0_0_20px_var(--glow)] text-xs uppercase tracking-widest disabled:opacity-50"
+                            >
+                                {loading || driveLoading ? <Loader2 className="animate-spin" size={18} /> : (currentStep === 9 ? 'Confirmar Pedido' : 'Continuar')}
+                                {!(loading || driveLoading) && <ChevronRight size={18} />}
+                            </button>
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Toast Notification Overlay */}
                 {toast && (

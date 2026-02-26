@@ -51,13 +51,27 @@ export default function Sidebar({
                 isCollapsed ? "w-20" : "w-64"
             )}
         >
-            <div className="p-6 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shrink-0 shadow-[0_0_15px_var(--glow)]">
-                    <Zap className="text-text-inverse fill-text-inverse" size={18} />
+            <div className={cn(
+                "p-6 flex items-center transition-all duration-300",
+                isCollapsed ? "justify-center p-4" : "gap-4"
+            )}>
+                <div className={cn(
+                    "relative flex items-center justify-center transition-all duration-300",
+                    isCollapsed ? "w-10 h-10" : "w-full"
+                )}>
+                    <img
+                        src="/shades-logo.svg"
+                        alt="SHADES Logo"
+                        className={cn(
+                            "w-full h-auto sidebar-logo",
+                            isCollapsed ? "scale-[1.5]" : ""
+                        )}
+                        style={{
+                            maxWidth: isCollapsed ? '32px' : '100%',
+                            maxHeight: isCollapsed ? '32px' : 'none',
+                        }}
+                    />
                 </div>
-                {!isCollapsed && (
-                    <span className="font-black text-xl text-foreground tracking-tighter uppercase italic">SHADES</span>
-                )}
             </div>
 
             <nav className="flex-1 px-3 py-4 space-y-1">
