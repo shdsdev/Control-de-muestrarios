@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Loader2, User, Mail, Lock, ArrowRight } from 'lucide-react';
 import Logo from '@/assets/Shades C.svg';
+import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
 
 export default function RegisterPage() {
     const [fullName, setFullName] = useState('');
@@ -42,7 +43,7 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#000000] text-foreground p-4 font-sans selection:bg-primary/30 relative overflow-hidden">
+        <div data-theme="shades-dark" className="min-h-screen flex items-center justify-center bg-background text-foreground p-4 font-sans selection:bg-primary/30 relative overflow-hidden">
             {/* Top-Center Ultra-Visible Glow */}
             <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[120%] h-[60%] bg-[#a3e635]/30 blur-[140px] rounded-full -z-10 animate-pulse duration-[10s]"></div>
             <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[#a3e635]/15 blur-[100px] rounded-full -z-10"></div>
@@ -134,6 +135,19 @@ export default function RegisterPage() {
                         )}
                     </button>
                 </form>
+
+                <div className="relative py-4">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-white/5"></div>
+                    </div>
+                    <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-bold">
+                        <span className="bg-[#000000] px-4 text-zinc-600">O registrarse con</span>
+                    </div>
+                </div>
+
+                <div className="pt-2">
+                    <GoogleSignInButton />
+                </div>
 
                 {message.text && (
                     <div className={`p-4 rounded-2xl text-[11px] font-bold border animate-in zoom-in-95 duration-300 uppercase tracking-widest ${message.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-primary/5 border-primary/20 text-primary-foreground'}`}>

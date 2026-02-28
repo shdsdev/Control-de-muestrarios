@@ -78,7 +78,7 @@ export default function RecuperarPage() {
 
         try {
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${window.location.origin}/actualizar-contrasena`,
+                redirectTo: `${window.location.origin}/auth/callback?next=/actualizar-contrasena`,
             });
 
             // We ALWAYS show success to avoid email enumeration
@@ -95,7 +95,7 @@ export default function RecuperarPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#000000] text-foreground p-4 font-sans selection:bg-primary/30 relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center bg-[#000000] text-foreground p-4 font-sans selection:bg-primary/30 relative overflow-hidden" data-theme="shades-dark">
             {/* Top-Center Ultra-Visible Glow */}
             <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[120%] h-[60%] bg-[#a3e635]/20 blur-[140px] rounded-full -z-10 animate-pulse duration-[10s]"></div>
 

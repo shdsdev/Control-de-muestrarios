@@ -69,7 +69,7 @@ export default function ActualizarContrasenaPage() {
 
     if (success) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#000000] text-foreground p-4 font-sans selection:bg-primary/30 relative overflow-hidden">
+            <div className="min-h-screen flex items-center justify-center bg-[#000000] text-foreground p-4 font-sans selection:bg-primary/30 relative overflow-hidden" data-theme="shades-dark">
                 <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[120%] h-[60%] bg-[#a3e635]/20 blur-[140px] rounded-full -z-10 animate-pulse duration-[10s]"></div>
 
                 <div className="w-full max-w-md space-y-8 glass p-10 rounded-[2.5rem] border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.8)] animate-in fade-in zoom-in-95 duration-700 relative z-10 backdrop-blur-2xl text-center">
@@ -91,7 +91,7 @@ export default function ActualizarContrasenaPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#000000] text-foreground p-4 font-sans selection:bg-primary/30 relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center bg-[#000000] text-foreground p-4 font-sans selection:bg-primary/30 relative overflow-hidden" data-theme="shades-dark">
             {/* Top-Center Ultra-Visible Glow */}
             <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[120%] h-[60%] bg-[#a3e635]/20 blur-[140px] rounded-full -z-10 animate-pulse duration-[10s]"></div>
 

@@ -88,8 +88,8 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(redirectUrl);
     }
 
-    // If user and trying to access login, redirect to dashboard
-    if (user && request.nextUrl.pathname === '/login') {
+    // If user and trying to access login OR root, redirect to dashboard
+    if (user && (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/')) {
         // If pending, send to success page instead of dashboard
         if (userStatus !== 'ACTIVO') {
             const redirectUrl = request.nextUrl.clone();
@@ -98,6 +98,13 @@ export async function middleware(request: NextRequest) {
         }
         const redirectUrl = request.nextUrl.clone();
         redirectUrl.pathname = '/dashboard';
+        return NextResponse.redirect(redirectUrl);
+    }
+
+    // If no user and trying to access root, redirect to login
+    if (!user && request.nextUrl.pathname === '/') {
+        const redirectUrl = request.nextUrl.clone();
+        redirectUrl.pathname = '/login';
         return NextResponse.redirect(redirectUrl);
     }
 

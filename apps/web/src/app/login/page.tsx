@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Loader2, Mail, Lock, ArrowRight } from 'lucide-react';
 import Logo from '@/assets/Shades C.svg';
+import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
 
 const MAX_ATTEMPTS = 5;
 const COOLDOWN_MS = 120000; // 2 minutes
@@ -103,7 +104,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#000000] text-foreground p-4 font-sans selection:bg-primary/30 relative overflow-hidden">
+        <div data-theme="shades-dark" className="min-h-screen flex items-center justify-center bg-background text-foreground p-4 font-sans selection:bg-primary/30 relative overflow-hidden">
             {/* Top-Center Ultra-Visible Glow */}
             <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[120%] h-[60%] bg-[#a3e635]/30 blur-[140px] rounded-full -z-10 animate-pulse duration-[10s]"></div>
             <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[#a3e635]/15 blur-[100px] rounded-full -z-10"></div>
@@ -204,6 +205,19 @@ export default function LoginPage() {
                             Crea una solicitando acceso
                         </Link>
                     </p>
+                </div>
+
+                <div className="relative py-4">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-white/5"></div>
+                    </div>
+                    <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-bold">
+                        <span className="bg-background px-4 text-zinc-600">O continuar con</span>
+                    </div>
+                </div>
+
+                <div className="pt-2">
+                    <GoogleSignInButton />
                 </div>
 
                 {message.text && (

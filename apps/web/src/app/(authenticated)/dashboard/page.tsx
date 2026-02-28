@@ -106,7 +106,7 @@ export default function DashboardPage() {
     ];
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="space-y-8 animate-in fade-in duration-500 max-w-[1400px] mx-auto w-full">
             {/* Header */}
             <div>
                 <h2 className="text-2xl font-bold text-white uppercase tracking-tight">Panel General</h2>

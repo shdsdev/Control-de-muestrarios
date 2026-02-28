@@ -380,7 +380,7 @@ export default function EmpresasPage() {
     // ── Render ──────────────────────────────────────────────────────────
 
     return (
-        <div className="space-y-5 animate-in fade-in duration-500">
+        <div className="space-y-5 animate-in fade-in duration-500 max-w-[1400px] mx-auto w-full">
             {/* Notification */}
             {notification && (
                 <div className={cn(

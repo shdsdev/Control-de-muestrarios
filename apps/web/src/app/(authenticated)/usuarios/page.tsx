@@ -26,6 +26,7 @@ import {
 import { cn } from '@/lib/utils';
 import { CustomSelect } from '@/components/ui/custom-select';
 import { ImageWithFallback } from '@/components/ui/image-with-fallback';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 type Perfil = {
     id: string;
@@ -81,6 +82,7 @@ const vailableViews = [
     'Productos',
     'Empresas',
     'Usuarios',
+    'Reportes',
     'Configuración'
 ];
 
@@ -101,6 +103,7 @@ const getAvatarColor = (id: string) => {
 };
 
 export default function UsuariosPage() {
+    const { user: authUser, refreshProfile } = useAuth();
     const [usuarios, setUsuarios] = useState<Perfil[]>([]);
     const [regiones, setRegiones] = useState<{ id: string, nombre: string }[]>([]);
     const [loading, setLoading] = useState(true);
@@ -117,6 +120,7 @@ export default function UsuariosPage() {
     // Form states
     const [formData, setFormData] = useState<Partial<Perfil>>({});
     const [uploading, setUploading] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     // Hierarchy helpers
     const myLevel = ROLE_LEVELS[currentUserRole] ?? 99;
@@ -208,6 +212,7 @@ export default function UsuariosPage() {
     };
 
     const handleSave = async () => {
+        setIsSaving(true);
         try {
             if (modalMode === 'create') {
                 // Use Edge Function to create auth user + profile atomically
@@ -254,9 +259,18 @@ export default function UsuariosPage() {
 
             showNotification(`Usuario ${modalMode === 'create' ? 'agregado' : 'actualizado'} exitosamente`);
             setIsModalOpen(false);
+
+            // If updating current user, refresh the global profile
+            if (selectedUsuario?.id === authUser?.id) {
+                console.log('UsuariosPage: Self-update detected, refreshing global profile');
+                await refreshProfile();
+            }
+
             fetchUsuarios();
         } catch (error: any) {
             showNotification(error.message || 'Error al guardar el usuario', 'error');
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -292,7 +306,7 @@ export default function UsuariosPage() {
         });
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500">
+        <div className="space-y-6 animate-in fade-in duration-500 max-w-[1400px] mx-auto w-full">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
@@ -708,9 +722,13 @@ export default function UsuariosPage() {
 
                                     <button
                                         onClick={handleSave}
-                                        className="w-full btn-neon-aqua font-bold py-5 rounded-2xl transition-all flex items-center justify-center gap-2 mt-4"
+                                        disabled={isSaving || uploading}
+                                        className={cn(
+                                            "w-full btn-neon-aqua font-bold py-5 rounded-2xl transition-all flex items-center justify-center gap-2 mt-4",
+                                            (isSaving || uploading) && "opacity-50 cursor-not-allowed"
+                                        )}
                                     >
-                                        <Save size={20} />
+                                        {isSaving ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
                                         {modalMode === 'create' ? 'Agregar Usuario' : 'Actualizar Cambios'}
                                     </button>
                                 </div>

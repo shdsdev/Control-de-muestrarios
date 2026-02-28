@@ -171,7 +171,7 @@ export default function ProductosPage() {
     );
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500">
+        <div className="space-y-6 animate-in fade-in duration-500 max-w-[1400px] mx-auto w-full">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
